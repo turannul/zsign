@@ -721,18 +721,18 @@ void ZLog::PrintV(int nLevel, const char *szFormatArgs, ...)
 
 bool ZLog::Error(const char *szLog)
 {
-	write(STDOUT_FILENO, "\033[31m", 5);
-	write(STDOUT_FILENO, szLog, strlen(szLog));
-	write(STDOUT_FILENO, "\033[0m", 4);
+	write(STDERR_FILENO, "\033[31m", 5);
+	write(STDERR_FILENO, szLog, strlen(szLog));
+	write(STDERR_FILENO, "\033[0m", 4);
 	return false;
 }
 
 bool ZLog::ErrorV(const char *szFormatArgs, ...)
 {
 	PARSEVALIST(szFormatArgs, szLog)
-	write(STDOUT_FILENO, "\033[31m", 5);
-	write(STDOUT_FILENO, szLog, strlen(szLog));
-	write(STDOUT_FILENO, "\033[0m", 4);
+	write(STDERR_FILENO, "\033[31m", 5);
+	write(STDERR_FILENO, szLog, strlen(szLog));
+	write(STDERR_FILENO, "\033[0m", 4);
 	return false;
 }
 
@@ -775,9 +775,9 @@ bool ZLog::Warn(const char *szLog)
 bool ZLog::WarnV(const char *szFormatArgs, ...)
 {
 	PARSEVALIST(szFormatArgs, szLog)
-	write(STDOUT_FILENO, "\033[33m", 5);
-	write(STDOUT_FILENO, szLog, strlen(szLog));
-	write(STDOUT_FILENO, "\033[0m", 4);
+	write(STDERR_FILENO, "\033[33m", 5);
+	write(STDERR_FILENO, szLog, strlen(szLog));
+	write(STDERR_FILENO, "\033[0m", 4);
 	return false;
 }
 
