@@ -7,7 +7,7 @@ brew install openssl
 ```
 and then (attention to replace your openssl version)
 ```bash
-g++ *.cpp common/*.cpp -lcrypto -I/usr/local/Cellar/openssl@1.1/1.1.1k/include -L/usr/local/Cellar/openssl@1.1/1.1.1k/lib -O3 -o zsign
+g++ *.cpp common/*.cpp -lcrypto -I/usr/local/Cellar/openssl@1.1/1.1.1w/include -L/usr/local/Cellar/openssl@1.1/1.1.1w/lib -O3 -o zsign
 ```
 
 ## Compile on Linux:
