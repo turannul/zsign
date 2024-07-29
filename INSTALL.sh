@@ -3,51 +3,30 @@
 # Detect OS if it is macOS
 if [[ "$(uname)" == "Darwin" ]]; then
 
-    # Install dependencies
-    brew install zip unzip openssl@1.1
-
-    # Get the installation prefix for OpenSSL 1.1
-    OPENSSL_PREFIX=$(brew --prefix openssl@1.1)
-    # Define the include and library paths
-    INCLUDE_PATH="$OPENSSL_PREFIX/include"
-    LIB_PATH="$OPENSSL_PREFIX/lib"
-
-    echo "Include path: $INCLUDE_PATH"
-    echo "Library path: $LIB_PATH"
+    # Dependencies for macOS
+    brew install zip unzip openssl@1.1 -q
 
     if [ -f build ]; then
-    # Remove old build directory
+        # Remove old build directory
         rm -rf build/
     else
-    # Create build folder
+        # Create build folder
         mkdir -p build
+        # Compile
+        cd build && cmake .. && make
     fi
-
-    # Compile
-    clang++ src/zsign/*.cpp -I"$INCLUDE_PATH" -L"$LIB_PATH" -lssl -lcrypto -O3 -o build/zsign
-
 else
-
     # Dependencies for Linux
     sudo apt-get update
     sudo apt-get install zip unzip build-essential checkinstall zlib1g-dev libssl-dev pkg-config -y
-    # OpenSSL Information
-    Linux_Include_Path=$(pkg-config --cflags openssl)
-    Linux_Lib_Path=$(pkg-config --libs openssl)
-
-    echo "Include path: $Linux_Include_Path"
-    echo "Library path: $Linux_Lib_Path"
 
     if [ -f build ]; then
-    # Remove old build directory
+        # Remove old build directory
         rm -rf build/
     else
-    # Create build folder
+        # Create build folder
         mkdir -p build
+        # Compile
+        cd build && cmake .. && make
     fi
-
-    # Compile
-    mkdir build; cd build &&
-    cmake .. && 
-    make
 fi
