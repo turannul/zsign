@@ -1,32 +1,23 @@
 #!/bin/bash
 
-# Detect OS if it is macOS
+build() {
+    if [ -d build ]; then
+        echo "Removing old build directory..."
+        rm -rf build/
+    fi
+
+    echo "Creating build directory"
+    mkdir -p build
+    echo "Building..."
+    cd build && cmake .. && make
+}
+
 if [[ "$(uname)" == "Darwin" ]]; then
-
-    # Dependencies for macOS
-    brew install zip unzip openssl@1.1 -q
-
-    if [ -f build ]; then
-        # Remove old build directory
-        rm -rf build/
-    else
-        # Create build folder
-        mkdir -p build
-        # Compile
-        cd build && cmake .. && make
-    fi
+    echo "Installing macOS dependencies..."
+    brew install zip unzip openssl@1.1 -q || { echo "Failed to install macOS dependencies"; exit 1; }
+    build
 else
-    # Dependencies for Linux
-    sudo apt-get update
-    sudo apt-get install zip unzip build-essential checkinstall zlib1g-dev libssl-dev pkg-config -y
-
-    if [ -f build ]; then
-        # Remove old build directory
-        rm -rf build/
-    else
-        # Create build folder
-        mkdir -p build
-        # Compile
-        cd build && cmake .. && make
-    fi
+    echo "Updating and installing Linux dependencies..."
+    sudo apt-get update && sudo apt-get install -y zip unzip build-essential checkinstall zlib1g-dev libssl-dev pkg-config || { echo "Failed to install Linux dependencies"; exit 1; }
+    build
 fi
