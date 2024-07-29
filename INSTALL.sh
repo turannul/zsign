@@ -30,7 +30,7 @@ else
 
     # Dependencies for Linux
     sudo apt-get update
-    sudo apt-get install wget zip unzip build-essential checkinstall zlib1g-dev libssl-dev -y
+    sudo apt-get install zip unzip build-essential checkinstall zlib1g-dev libssl-dev pkg-config -y
     # OpenSSL Information
     Linux_Include_Path=$(pkg-config --cflags openssl)
     Linux_Lib_Path=$(pkg-config --libs openssl)
