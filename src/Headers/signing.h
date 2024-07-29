@@ -1,8 +1,8 @@
 #pragma once
 #include "openssl.h"
-#include "common/common.h"
-#include "common/json.h"
-#include "common/mach-o.h"
+#include "common.h"
+#include "json.h"
+#include "mach-o.h"
 
 bool ParseCodeSignature(uint8_t *pCSBase);
 bool SlotBuildEntitlements(const string &strEntitlements, string &strOutput);

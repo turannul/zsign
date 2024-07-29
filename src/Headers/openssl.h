@@ -1,7 +1,7 @@
 #pragma once
-#include "common/json.h"
-#include "common/common.h"
-#include "common/base64.h"
+#include "json.h"
+#include "common.h"
+#include "base64.h"
 
 #include <openssl/pem.h>
 #include <openssl/cms.h>

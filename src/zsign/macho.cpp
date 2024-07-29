@@ -1,9 +1,9 @@
-#include "common/common.h"
-#include "common/json.h"
-#include "common/mach-o.h"
-#include "openssl.h"
-#include "signing.h"
-#include "macho.h"
+#include "../Headers/common.h"
+#include "../Headers/json.h"
+#include "../Headers/mach-o.h"
+#include "../Headers/openssl.h"
+#include "../Headers/signing.h"
+#include "../Headers/macho.h"
 
 ZMachO::ZMachO()
 {

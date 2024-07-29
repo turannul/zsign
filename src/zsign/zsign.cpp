@@ -1,4 +1,4 @@
-#include "zsign.h"
+#include "../Headers/zsign.h"
 
 const struct option options[] = {
 	{"debug", no_argument, NULL, 'd'},

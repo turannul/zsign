@@ -1,4 +1,4 @@
-#include "common.h"
+#include "../Headers/common.h"
 
 int remove_embedded = 0;
 

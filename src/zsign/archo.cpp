@@ -1,7 +1,7 @@
-#include "common/common.h"
-#include "common/json.h"
-#include "archo.h"
-#include "signing.h"
+#include "../Headers/common.h"
+#include "../Headers/json.h"
+#include "../Headers/archo.h"
+#include "../Headers/signing.h"
 
 static uint64_t execSegLimit = 0;
 

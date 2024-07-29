@@ -1,13 +1,11 @@
 #pragma once
-#include "common/common.h"
-#include "common/json.h"
+#include "common.h"
+#include "json.h"
+#include "base64.h"
 #include "openssl.h"
-
 #include "macho.h"
-#include "sys/stat.h"
 #include "sys/types.h"
-#include "common/base64.h"
-#include "common/common.h"
+#include "sys/stat.h"
 
 class ZAppBundle
 {
