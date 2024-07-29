@@ -1,5 +1,13 @@
 #pragma once
 #include "common/json.h"
+#include "common/common.h"
+#include "common/base64.h"
+
+#include <openssl/pem.h>
+#include <openssl/cms.h>
+#include <openssl/err.h>
+#include <openssl/pkcs12.h>
+#include <openssl/conf.h>
 
 bool GetCertSubjectCN(const string &strCertData, string &strSubjectCN);
 bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput);

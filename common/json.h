@@ -28,6 +28,18 @@ typedef unsigned long long int uint64_t;
 #include <limits>
 #include <algorithm>
 #include <cinttypes>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <assert.h>
+#include <stdarg.h>
+#include <inttypes.h>
+#include <math.h>
+#include <sys/stat.h>
+#include "base64.h"
+
 using namespace std;
 
 

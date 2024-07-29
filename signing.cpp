@@ -1,7 +1,4 @@
-#include "common/common.h"
-#include "common/json.h"
-#include "common/mach-o.h"
-#include "openssl.h"
+#include "signing.h"
 
 static void _DERLength(string &strBlob, uint64_t uLength)
 {
@@ -763,7 +760,7 @@ bool ParseCodeSignature(uint8_t *pCSBase)
 		return false;
 	}
 
-	ZLog::PrintV("\n>>> CodeSignature Segment: \n");
+	ZLog::PrintV("\nCodeSignature Segment: \n");
 	ZLog::PrintV("\tmagic: \t\t0x%x\n", LE(psb->magic));
 	ZLog::PrintV("\tlength: \t%d\n", LE(psb->length));
 	ZLog::PrintV("\tslots: \t\t%d\n", LE(psb->count));

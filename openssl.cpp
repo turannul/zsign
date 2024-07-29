@@ -1,12 +1,4 @@
-#include "common/common.h"
-#include "common/base64.h"
 #include "openssl.h"
-
-#include <openssl/pem.h>
-#include <openssl/cms.h>
-#include <openssl/err.h>
-#include <openssl/pkcs12.h>
-#include <openssl/conf.h>
 
 class COpenSSLInit
 {
@@ -109,7 +101,7 @@ const char *appleRootCACert = ""
 
 bool CMSError()
 {
-	ERR_print_errors_fp(stdout);
+	ERR_print_errors_fp(stderr);
 	return false;
 }
 
@@ -120,23 +112,29 @@ ASN1_TYPE *_GenerateASN1Type(const string &value)
 	BIO *ldapbio = BIO_new(BIO_s_mem());
 	CONF *cnf = NCONF_new(NULL);
 
-	if (cnf == NULL) {
-		ZLog::Error(">>> NCONF_new failed\n");
+	if (cnf == NULL)
+	{
+		ZLog::Error("Failed to create new CONF structure. (NCONF_new)\n");
 		BIO_free(ldapbio);
+		return nullptr;
 	}
 	string a = "asn1=SEQUENCE:A\n[A]\nC=OBJECT:sha256\nB=FORMAT:HEX,OCT:" + value + "\n";
 	int code = BIO_puts(ldapbio, a.c_str());
-	if (NCONF_load_bio(cnf, ldapbio, &errline) <= 0) {
+	if (NCONF_load_bio(cnf, ldapbio, &errline) <= 0)
+	{
 		BIO_free(ldapbio);
 		NCONF_free(cnf);
-		ZLog::PrintV(">>> NCONF_load_bio failed %d\n", errline);
+		ZLog::Error("Failed to load configuration from BIO (NCONF_load_bio)\n");
+		return nullptr;
 	}
 	BIO_free(ldapbio);
 	genstr = NCONF_get_string(cnf, "default", "asn1");
 
-	if (genstr == NULL) {
-		ZLog::Error(">>> NCONF_get_string failed\n");
+	if (genstr == NULL)
+	{
+		ZLog::Error("Failed to get ASN1 string from CONF structure (NCONF_get_string)\n");
 		NCONF_free(cnf);
+		return nullptr;
 	}
 	ASN1_TYPE *ret = ASN1_generate_nconf(genstr, cnf);
 	NCONF_free(cnf);
@@ -162,8 +160,8 @@ bool _GenerateCMS(X509 *scert, EVP_PKEY *spkey, const string &strCDHashData, con
 	}
 	else
 	{
-		ZLog::Error(">>> Unknown Issuer Hash!\n");
-		return false;
+		ZLog::Error("Signer certificate or private key is null\n");
+		return CMSError();
 	}
 
 	BIO *bother2 = BIO_new_mem_buf(appleRootCACert, (int)strlen(appleRootCACert));
@@ -208,23 +206,26 @@ bool _GenerateCMS(X509 *scert, EVP_PKEY *spkey, const string &strCDHashData, con
 		return CMSError();
 	}
 
-    CMS_SignerInfo * si = CMS_add1_signer(cms, scert, spkey, EVP_sha256(), nFlags);
-//    CMS_add1_signer(cms, NULL, NULL, EVP_sha1(), nFlags);
-    if (!si) {
-        return CMSError();
-    }
-    
+	CMS_SignerInfo *si = CMS_add1_signer(cms, scert, spkey, EVP_sha256(), nFlags);
+	//    CMS_add1_signer(cms, NULL, NULL, EVP_sha1(), nFlags);
+	if (!si)
+	{
+		return CMSError();
+	}
+
 	// add plist
-    ASN1_OBJECT * obj = OBJ_txt2obj("1.2.840.113635.100.9.1", 1);
-    if (!obj) {
-        return CMSError();
-    }
-    
-    int addHashPlist = CMS_signed_add1_attr_by_OBJ(si, obj, 0x4, strCDHashesPlist.c_str(), (int)strCDHashesPlist.size());
-    
-    if (!addHashPlist) {
-        return CMSError();
-    }
+	ASN1_OBJECT *obj = OBJ_txt2obj("1.2.840.113635.100.9.1", 1);
+	if (!obj)
+	{
+		return CMSError();
+	}
+
+	int addHashPlist = CMS_signed_add1_attr_by_OBJ(si, obj, 0x4, strCDHashesPlist.c_str(), (int)strCDHashesPlist.size());
+
+	if (!addHashPlist)
+	{
+		return CMSError();
+	}
 
 	// add CDHashes
 	string sha256;
@@ -236,21 +237,23 @@ bool _GenerateCMS(X509 *scert, EVP_PKEY *spkey, const string &strCDHashData, con
 	}
 	transform(sha256.begin(), sha256.end(), sha256.begin(), ::toupper);
 
-	ASN1_OBJECT * obj2 = OBJ_txt2obj("1.2.840.113635.100.9.2", 1);
-    if (!obj2) {
-        return CMSError();
-    }
+	ASN1_OBJECT *obj2 = OBJ_txt2obj("1.2.840.113635.100.9.2", 1);
+	if (!obj2)
+	{
+		return CMSError();
+	}
 
 	X509_ATTRIBUTE *attr = X509_ATTRIBUTE_new();
 	X509_ATTRIBUTE_set1_object(attr, obj2);
 
 	ASN1_TYPE *type_256 = _GenerateASN1Type(sha256);
 	X509_ATTRIBUTE_set1_data(attr, V_ASN1_SEQUENCE,
-                             type_256->value.asn1_string->data, type_256->value.asn1_string->length);
+							 type_256->value.asn1_string->data, type_256->value.asn1_string->length);
 	int addHashSHA = CMS_signed_add1_attr(si, attr);
-	if (!addHashSHA) {
-        return CMSError();
-    }
+	if (!addHashSHA)
+	{
+		return CMSError();
+	}
 
 	if (!CMS_final(cms, in, NULL, nFlags))
 	{
@@ -263,7 +266,7 @@ bool _GenerateCMS(X509 *scert, EVP_PKEY *spkey, const string &strCDHashData, con
 		return CMSError();
 	}
 
-	//PEM_write_bio_CMS(out, cms);
+	// PEM_write_bio_CMS(out, cms);
 	if (!i2d_CMS_bio(out, cms))
 	{
 		return CMSError();
@@ -296,6 +299,7 @@ bool GenerateCMS(const string &strSignerCertData, const string &strSignerPKeyDat
 	EVP_PKEY *spkey = PEM_read_bio_PrivateKey(bpkey, NULL, 0, NULL);
 	if (!scert || !spkey)
 	{
+		ZLog::Error("Failed to create BIO from certificate or private key data\n");
 		return CMSError();
 	}
 
@@ -512,7 +516,7 @@ bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput)
 	for (int i = 0; i < sk_CMS_SignerInfo_num(sis); i++)
 	{
 		CMS_SignerInfo *si = sk_CMS_SignerInfo_value(sis, i);
-		//int CMS_SignerInfo_get0_signer_id(CMS_SignerInfo *si, ASN1_OCTET_STRING **keyid, X509_NAME **issuer, ASN1_INTEGER **sno);
+		// int CMS_SignerInfo_get0_signer_id(CMS_SignerInfo *si, ASN1_OCTET_STRING **keyid, X509_NAME **issuer, ASN1_INTEGER **sno);
 
 		int nSignedAttsCount = CMS_signed_get_attr_count(si);
 		for (int j = 0; j < nSignedAttsCount; j++)
@@ -538,7 +542,7 @@ bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput)
 			OBJ_obj2txt(txtobj, 128, obj, 1);
 
 			if (0 == strcmp("1.2.840.113549.1.9.3", txtobj))
-			{ //V_ASN1_OBJECT
+			{ // V_ASN1_OBJECT
 				ASN1_TYPE *av = X509_ATTRIBUTE_get0_type(attr, 0);
 				if (NULL != av)
 				{
@@ -547,7 +551,7 @@ bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput)
 				}
 			}
 			else if (0 == strcmp("1.2.840.113549.1.9.4", txtobj))
-			{ //V_ASN1_OCTET_STRING
+			{ // V_ASN1_OCTET_STRING
 				ASN1_TYPE *av = X509_ATTRIBUTE_get0_type(attr, 0);
 				if (NULL != av)
 				{
@@ -563,7 +567,7 @@ bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput)
 				}
 			}
 			else if (0 == strcmp("1.2.840.113549.1.9.5", txtobj))
-			{ //V_ASN1_UTCTIME
+			{ // V_ASN1_UTCTIME
 				ASN1_TYPE *av = X509_ATTRIBUTE_get0_type(attr, 0);
 				if (NULL != av)
 				{
@@ -581,7 +585,7 @@ bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput)
 				}
 			}
 			else if (0 == strcmp("1.2.840.113635.100.9.2", txtobj))
-			{ //V_ASN1_SEQUENCE
+			{ // V_ASN1_SEQUENCE
 				jvOutput["attrs"]["CDHashes2"]["obj"] = txtobj;
 				for (int m = 0; m < nCount; m++)
 				{
@@ -616,7 +620,7 @@ bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput)
 				}
 			}
 			else if (0 == strcmp("1.2.840.113635.100.9.1", txtobj))
-			{ //V_ASN1_OCTET_STRING
+			{ // V_ASN1_OCTET_STRING
 				ASN1_TYPE *av = X509_ATTRIBUTE_get0_type(attr, 0);
 				if (NULL != av)
 				{
@@ -657,7 +661,7 @@ bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPK
 	ReadFile(strEntitlementsFile.c_str(), m_strEntitlementsData);
 	if (m_strProvisionData.empty())
 	{
-		ZLog::Error(">>> Can't Find Provision File!\n");
+		ZLog::Error("Can't Find Provision File!\n");
 		return false;
 	}
 
@@ -677,7 +681,7 @@ bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPK
 
 	if (m_strTeamId.empty())
 	{
-		ZLog::Error(">>> Can't Find TeamId!\n");
+		ZLog::Error("Can't Find TeamId!\n");
 		return false;
 	}
 
@@ -710,7 +714,7 @@ bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPK
 
 	if (NULL == evpPKey)
 	{
-		ZLog::Error(">>> Can't Load P12 or PrivateKey File! Please Input The Correct File And Password!\n");
+		ZLog::Error("Can't Load P12 or PrivateKey File! Please Input The Correct File And Password!\n");
 		return false;
 	}
 
@@ -763,13 +767,13 @@ bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPK
 
 	if (NULL == x509Cert)
 	{
-		ZLog::Error(">>> Can't Find Paired Certificate And PrivateKey!\n");
+		ZLog::Error("Can't Find Paired Certificate And PrivateKey!\n");
 		return false;
 	}
 
 	if (!GetCertSubjectCN(x509Cert, m_strSubjectCN))
 	{
-		ZLog::Error(">>> Can't Find Paired Certificate Subject Common Name!\n");
+		ZLog::Error("Can't Find Paired Certificate Subject Common Name!\n");
 		return false;
 	}
 

@@ -24,6 +24,13 @@
 #include <vector>
 #include <string>
 #include <iostream>
+
+#include "base64.h"
+#include <cinttypes>
+#include <sys/stat.h>
+#include <inttypes.h>
+#include <openssl/sha.h>
+
 using namespace std;
 extern int remove_embedded;
 #define LE(x) _Swap(x)

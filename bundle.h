@@ -3,6 +3,12 @@
 #include "common/json.h"
 #include "openssl.h"
 
+#include "macho.h"
+#include "sys/stat.h"
+#include "sys/types.h"
+#include "common/base64.h"
+#include "common/common.h"
+
 class ZAppBundle
 {
 public:

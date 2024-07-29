@@ -1,14 +1,4 @@
 #include "json.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <assert.h>
-#include <stdarg.h>
-#include <inttypes.h>
-#include <math.h>
-#include <sys/stat.h>
-#include "base64.h"
 
 #ifndef WIN32
 #define _atoi64(val) strtoll(val, NULL, 10)

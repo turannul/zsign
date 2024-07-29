@@ -1,9 +1,4 @@
 #include "common.h"
-#include "base64.h"
-#include <cinttypes>
-#include <sys/stat.h>
-#include <inttypes.h>
-#include <openssl/sha.h>
 
 int remove_embedded = 0;
 
@@ -683,7 +678,7 @@ uint64_t ZTimer::Print(const char *szFormatArgs, ...)
 {
 	PARSEVALIST(szFormatArgs, szFormat)
 	uint64_t uElapse = GetMicroSecond() - m_uBeginTime;
-	ZLog::PrintV("%s (%.03fs, %lluus)\n", szFormat, uElapse / 1000000.0, uElapse);
+	ZLog::PrintV("%s (%.03fs)\n", szFormat, uElapse / 1000000.0);
 	return Reset();
 }
 
@@ -691,7 +686,7 @@ uint64_t ZTimer::PrintResult(bool bSuccess, const char *szFormatArgs, ...)
 {
 	PARSEVALIST(szFormatArgs, szFormat)
 	uint64_t uElapse = GetMicroSecond() - m_uBeginTime;
-	ZLog::PrintResultV(bSuccess, "%s (%.03fs, %lluus)\n", szFormat, uElapse / 1000000.0, uElapse);
+	ZLog::PrintResultV(bSuccess, "%s (%.03fs)\n", szFormat, uElapse / 1000000.0);
 	return Reset();
 }
 
@@ -721,35 +716,26 @@ void ZLog::PrintV(int nLevel, const char *szFormatArgs, ...)
 
 bool ZLog::Error(const char *szLog)
 {
-	write(STDERR_FILENO, "\033[31m", 5);
 	write(STDERR_FILENO, szLog, strlen(szLog));
-	write(STDERR_FILENO, "\033[0m", 4);
 	return false;
 }
 
 bool ZLog::ErrorV(const char *szFormatArgs, ...)
 {
 	PARSEVALIST(szFormatArgs, szLog)
-	write(STDERR_FILENO, "\033[31m", 5);
 	write(STDERR_FILENO, szLog, strlen(szLog));
-	write(STDERR_FILENO, "\033[0m", 4);
 	return false;
 }
 
 bool ZLog::Success(const char *szLog)
-{
-	write(STDOUT_FILENO, "\033[32m", 5);
-	write(STDOUT_FILENO, szLog, strlen(szLog));
-	write(STDOUT_FILENO, "\033[0m", 4);
-	return true;
+{	write(STDOUT_FILENO, szLog, strlen(szLog));
+return true;
 }
 
 bool ZLog::SuccessV(const char *szFormatArgs, ...)
 {
 	PARSEVALIST(szFormatArgs, szLog)
-	write(STDOUT_FILENO, "\033[32m", 5);
 	write(STDOUT_FILENO, szLog, strlen(szLog));
-	write(STDOUT_FILENO, "\033[0m", 4);
 	return true;
 }
 
@@ -766,18 +752,14 @@ bool ZLog::PrintResultV(bool bSuccess, const char *szFormatArgs, ...)
 
 bool ZLog::Warn(const char *szLog)
 {
-	write(STDOUT_FILENO, "\033[33m", 5);
 	write(STDOUT_FILENO, szLog, strlen(szLog));
-	write(STDOUT_FILENO, "\033[0m", 4);
 	return false;
 }
 
 bool ZLog::WarnV(const char *szFormatArgs, ...)
 {
 	PARSEVALIST(szFormatArgs, szLog)
-	write(STDERR_FILENO, "\033[33m", 5);
 	write(STDERR_FILENO, szLog, strlen(szLog));
-	write(STDERR_FILENO, "\033[0m", 4);
 	return false;
 }
 

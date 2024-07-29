@@ -1,11 +1,4 @@
-#include "common/common.h"
-#include "common/json.h"
-#include "openssl.h"
-#include "macho.h"
-#include "bundle.h"
-#include <libgen.h>
-#include <dirent.h>
-#include <getopt.h>
+#include "zsign.h"
 
 const struct option options[] = {
 	{"debug", no_argument, NULL, 'd'},
@@ -53,7 +46,7 @@ int usage()
 	ZLog::Print("-v, --version\t\tShow version.\n");
 	ZLog::Print("-h, --help\t\tShow this message.\n");
 	ZLog::Print("Modified & Updated by Turann_ for favoursign bot.");
-	return -1;
+	return 0;
 }
 
 int main(int argc, char *argv[])
@@ -71,6 +64,7 @@ int main(int argc, char *argv[])
 	string strPassword;
 	string strBundleId;
 	string strBundleVersion;
+	string intRequiredOSVersion;
 	string strDyLibFile;
 	string strOutputFile;
 	string strDisplayName;
@@ -132,7 +126,7 @@ int main(int argc, char *argv[])
 			break;
 		case 'v':
 		{
-			printf("version: 0.5\n");
+			printf("version: 0.5.1\n");
 			return 0;
 		}
 		break;
@@ -142,7 +136,7 @@ int main(int argc, char *argv[])
 			break;
 		}
 
-		ZLog::DebugV(">>> Option:\t-%c, %s\n", opt, optarg);
+		ZLog::DebugV("Option:\t-%c, %s\n", opt, optarg);
 	}
 
 	if (optind >= argc)
@@ -155,14 +149,14 @@ int main(int argc, char *argv[])
 		CreateFolder("./.zsign_debug");
 		for (int i = optind; i < argc; i++)
 		{
-			ZLog::DebugV(">>> Argument:\t%s\n", argv[i]);
+			ZLog::DebugV("Argument:\t%s\n", argv[i]);
 		}
 	}
 
 	string strPath = GetCanonicalizePath(argv[optind]);
 	if (!IsFileExists(strPath.c_str()))
 	{
-		ZLog::ErrorV(">>> Invalid Path! %s\n", strPath.c_str());
+		ZLog::ErrorV("Invalid Path! %s\n", strPath.c_str());
 		return -1;
 	}
 
@@ -204,21 +198,21 @@ int main(int argc, char *argv[])
 		bForce = true;
 		bEnableCache = false;
 		StringFormat(strFolder, "/tmp/zsign_folder_%llu", timer.Reset());
-		ZLog::PrintV(">>> Unzip:\t%s (%s) -> %s ... \n", strPath.c_str(), GetFileSizeString(strPath.c_str()).c_str(), strFolder.c_str());
+		ZLog::PrintV("Extracting: %s (%s) -> %s\n", strPath.c_str(), GetFileSizeString(strPath.c_str()).c_str(), strFolder.c_str());
 		RemoveFolder(strFolder.c_str());
 		if (!SystemExec("unzip -qq -o -d '%s' '%s'", strFolder.c_str(), strPath.c_str()))
 		{
 			RemoveFolder(strFolder.c_str());
-			ZLog::ErrorV(">>> Unzip Failed!\n");
+			ZLog::ErrorV("Extract Failed!\n");
 			return -1;
 		}
-		timer.PrintResult(true, ">>> Unzip OK!");
+		timer.PrintResult(true, "Extract OK");
 	}
 
 	timer.Reset();
 	ZAppBundle bundle;
 	bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bEnableCache);
-	timer.PrintResult(bRet, ">>> Signed %s!", bRet ? "OK" : "Failed");
+	timer.PrintResult(bRet, "Signed %s!", bRet ? "OK" : "Failed");
 
 	if (bInstall && strOutputFile.empty())
 	{
@@ -231,11 +225,11 @@ int main(int argc, char *argv[])
 		size_t pos = bundle.m_strAppFolder.rfind("/Payload");
 		if (string::npos == pos)
 		{
-			ZLog::Error(">>> Can't Find Payload Directory!\n");
+			ZLog::Error("Can't Find Payload Directory!\n");
 			return -1;
 		}
 
-		ZLog::PrintV(">>> Archiving: \t%s ... \n", strOutputFile.c_str());
+		ZLog::PrintV("Compressing: %s\n", strOutputFile.c_str());
 		string strBaseFolder = bundle.m_strAppFolder.substr(0, pos);
 		char szOldFolder[PATH_MAX] = {0};
 		if (NULL != getcwd(szOldFolder, PATH_MAX))
@@ -248,12 +242,12 @@ int main(int argc, char *argv[])
 				chdir(szOldFolder);
 				if (!IsFileExists(strOutputFile.c_str()))
 				{
-					ZLog::Error(">>> Archive Failed!\n");
+					ZLog::Error("Compress Failed!\n");
 					return -1;
 				}
 			}
 		}
-		timer.PrintResult(true, ">>> Archive OK! (%s)", GetFileSizeString(strOutputFile.c_str()).c_str());
+		timer.PrintResult(true, "Compress OK! (%s)", GetFileSizeString(strOutputFile.c_str()).c_str());
 	}
 
 	if (bRet && bInstall)
@@ -271,6 +265,6 @@ int main(int argc, char *argv[])
 		RemoveFolder(strFolder.c_str());
 	}
 
-	gtimer.Print(">>> Done.");
+	gtimer.Print("Success!");
 	return bRet ? 0 : -1;
 }

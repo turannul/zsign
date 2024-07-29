@@ -1,9 +1,5 @@
 #include "bundle.h"
-#include "macho.h"
-#include "sys/stat.h"
-#include "sys/types.h"
-#include "common/base64.h"
-#include "common/common.h"
+
 
 ZAppBundle::ZAppBundle()
 {
@@ -36,7 +32,7 @@ bool ZAppBundle::FindAppFolder(const string &strFolder, string &strAppFolder)
 				else if (DT_UNKNOWN == ptr->d_type)
 				{
 					// Entry type can be unknown depending on the underlying file system
-					ZLog::DebugV(">>> Unknown directory entry type for %s, falling back to POSIX-compatible check\n", strFolder.c_str());
+					ZLog::DebugV("Unknown directory entry type for %s, falling back to POSIX-compatible check\n", strFolder.c_str());
 					struct stat statbuf;
 					stat(strFolder.c_str(), &statbuf);
 					if (S_ISDIR(statbuf.st_mode))
@@ -72,6 +68,7 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 	string strBundleId = jvInfo["CFBundleIdentifier"];
 	string strBundleExe = jvInfo["CFBundleExecutable"];
 	string strBundleVersion = jvInfo["CFBundleShortVersionString"];
+	string intRequiredOSVersion = jvInfo["MinimumOSVersion"];
 	if (strBundleId.empty() || strBundleExe.empty())
 	{
 		return false;
@@ -84,6 +81,7 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 	jvNode["bid"] = strBundleId;
 	jvNode["bver"] = strBundleVersion;
 	jvNode["exec"] = strBundleExe;
+	jvNode["ros"] = intRequiredOSVersion;
 	jvNode["sha1"] = strInfoPlistSHA1Base64;
 	jvNode["sha2"] = strInfoPlistSHA256Base64;
 
@@ -337,7 +335,7 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 		for (size_t i = 0; i < jvNode["files"].size(); i++)
 		{
 			const char *szFile = jvNode["files"][i].asCString();
-			ZLog::PrintV(">>> SignFile: \t%s\n", szFile);
+			ZLog::PrintV("SignFile: %s\n", szFile);
 			ZMachO macho;
 			if (!macho.InitV("%s/%s", m_strAppFolder.c_str(), szFile))
 			{
@@ -360,7 +358,7 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 	b64.Decode(jvNode["sha2"].asCString(), strInfoPlistSHA256);
 	if (strBundleId.empty() || strBundleExe.empty() || strInfoPlistSHA1.empty() || strInfoPlistSHA256.empty())
 	{
-		ZLog::ErrorV(">>> Can't Get BundleID or BundleExecute or Info.plist SHASum in Info.plist! %s\n", strFolder.c_str());
+		ZLog::ErrorV("Can't Get BundleID or BundleExecute or Info.plist SHASum in Info.plist! %s\n", strFolder.c_str());
 		return false;
 	}
 
@@ -372,12 +370,12 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 	}
 
 	string strExePath = strBaseFolder + "/" + strBundleExe;
-	ZLog::PrintV(">>> SignFolder: %s, (%s)\n", ("/" == strFolder) ? basename((char *)m_strAppFolder.c_str()) : strFolder.c_str(), strBundleExe.c_str());
+	ZLog::PrintV("SignFolder: %s, (%s)\n", ("/" == strFolder) ? basename((char *)m_strAppFolder.c_str()) : strFolder.c_str(), strBundleExe.c_str());
 
 	ZMachO macho;
 	if (!macho.Init(strExePath.c_str()))
 	{
-		ZLog::ErrorV(">>> Can't Parse BundleExecute File! %s\n", strExePath.c_str());
+		ZLog::ErrorV("Can't Parse BundleExecute File! %s\n", strExePath.c_str());
 		return false;
 	}
 	CreateFolderV("%s/_CodeSignature", strBaseFolder.c_str());
@@ -393,7 +391,7 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 	{ //create
 		if (!GenerateCodeResources(strBaseFolder, jvCodeRes))
 		{
-			ZLog::ErrorV(">>> Create CodeResources Failed! %s\n", strBaseFolder.c_str());
+			ZLog::ErrorV("Create CodeResources Failed! %s\n", strBaseFolder.c_str());
 			return false;
 		}
 	}
@@ -408,7 +406,7 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 			string strFileSHA256Base64;
 			if (!SHASumBase64File(strRealFile.c_str(), strFileSHA1Base64, strFileSHA256Base64))
 			{
-				ZLog::ErrorV(">>> Can't Get Changed File SHASumBase64! %s", strFile.c_str());
+				ZLog::ErrorV("Can't Get Changed File SHASumBase64! %s", strFile.c_str());
 				return false;
 			}
 
@@ -421,7 +419,7 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 			jvCodeRes["files2"][strKey]["hash"] = "data:" + strFileSHA1Base64;
 			jvCodeRes["files2"][strKey]["hash2"] = "data:" + strFileSHA256Base64;
 
-			ZLog::DebugV("\t\tChanged File: %s, %s\n", strFileSHA1Base64.c_str(), strKey.c_str());
+			ZLog::DebugV("\tChanged File: %s, %s\n", strFileSHA1Base64.c_str(), strKey.c_str());
 		}
 	}
 
@@ -495,7 +493,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 
 	if (!FindAppFolder(strFolder, m_strAppFolder))
 	{
-		ZLog::ErrorV(">>> Can't Find App Folder! %s\n", strFolder.c_str());
+		ZLog::ErrorV("Can't Find App Directory! %s\n", strFolder.c_str());
 		return false;
 	}
 
@@ -509,7 +507,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 			{
 				string strOldBundleID = jvInfoPlist["CFBundleIdentifier"];
 				jvInfoPlist["CFBundleIdentifier"] = strBundleID;
-				ZLog::PrintV(">>> BundleId: \t%s -> %s\n", strOldBundleID.c_str(), strBundleID.c_str());
+				ZLog::PrintV("BundleId: %s -> %s\n", strOldBundleID.c_str(), strBundleID.c_str());
 
 				//modify plugins bundle id
 				vector<string> arrPlugIns;
@@ -524,7 +522,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 						string strNewPlugInBundleID = strOldPlugInBundleID;
 						StringReplace(strNewPlugInBundleID, strOldBundleID, strBundleID);
 						jvPlugInInfoPlist["CFBundleIdentifier"] = strNewPlugInBundleID;
-						ZLog::PrintV(">>> BundleId: \t%s -> %s, PlugIn\n", strOldPlugInBundleID.c_str(), strNewPlugInBundleID.c_str());
+						ZLog::PrintV("BundleId: %s -> %s, PlugIn\n", strOldPlugInBundleID.c_str(), strNewPlugInBundleID.c_str());
 
 						if (jvPlugInInfoPlist.has("WKCompanionAppBundleIdentifier"))
 						{
@@ -532,7 +530,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 							string strNewWKCBundleID = strOldWKCBundleID;
 							StringReplace(strNewWKCBundleID, strOldBundleID, strBundleID);
 							jvPlugInInfoPlist["WKCompanionAppBundleIdentifier"] = strNewWKCBundleID;
-							ZLog::PrintV(">>> BundleId: \t%s -> %s, PlugIn-WKCompanionAppBundleIdentifier\n", strOldWKCBundleID.c_str(), strNewWKCBundleID.c_str());
+							ZLog::PrintV("BundleId: %s -> %s, PlugIn-WKCompanionAppBundleIdentifier\n", strOldWKCBundleID.c_str(), strNewWKCBundleID.c_str());
 						}
 
 						if (jvPlugInInfoPlist.has("NSExtension"))
@@ -545,7 +543,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 									string strNewWKBundleID = strOldWKBundleID;
 									StringReplace(strNewWKBundleID, strOldBundleID, strBundleID);
 									jvPlugInInfoPlist["NSExtension"]["NSExtensionAttributes"]["WKAppBundleIdentifier"] = strNewWKBundleID;
-									ZLog::PrintV(">>> BundleId: \t%s -> %s, NSExtension-NSExtensionAttributes-WKAppBundleIdentifier\n", strOldWKBundleID.c_str(), strNewWKBundleID.c_str());
+									ZLog::PrintV("BundleId: %s -> %s, NSExtension-NSExtensionAttributes-WKAppBundleIdentifier\n", strOldWKBundleID.c_str(), strNewWKBundleID.c_str());
 								}
 							}
 						}
@@ -560,7 +558,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 				string strOldDisplayName = jvInfoPlist["CFBundleDisplayName"];
 				jvInfoPlist["CFBundleName"] = strDisplayName;
 				jvInfoPlist["CFBundleDisplayName"] = strDisplayName;
-				ZLog::PrintV(">>> BundleName: %s -> %s\n", strOldDisplayName.c_str(), strDisplayName.c_str());
+				ZLog::PrintV("BundleName: %s -> %s\n", strOldDisplayName.c_str(), strDisplayName.c_str());
 			}
 
 			if (!strDisplayName.empty())
@@ -568,14 +566,14 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 				string strOldDisplayName = jvInfoPlist["CFBundleDisplayName"];
 				jvInfoPlist["CFBundleName"] = strDisplayName;
 				jvInfoPlist["CFBundleDisplayName"] = strDisplayName;
-				ZLog::PrintV(">>> BundleName: %s -> %s\n", strOldDisplayName.c_str(), strDisplayName.c_str());
+				ZLog::PrintV("BundleName: %s -> %s\n", strOldDisplayName.c_str(), strDisplayName.c_str());
 			}
 
 			jvInfoPlist.writePListPath("%s/Info.plist", m_strAppFolder.c_str());
 		}
 		else
 		{
-			ZLog::ErrorV(">>> Can't Find App's Info.plist! %s\n", strFolder.c_str());
+			ZLog::ErrorV("Can't Find Info.plist! %s\n", strFolder.c_str());
 			return false;
 		}
 	}
@@ -601,7 +599,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 
 	if (!WriteFile(pSignAsset->m_strProvisionData, "%s/embedded.mobileprovision", m_strAppFolder.c_str()))
 	{ //embedded.mobileprovision
-		ZLog::ErrorV(">>> Can't Write embedded.mobileprovision!\n");
+		ZLog::ErrorV("Can't Write embedded.mobileprovision!\n");
 		return false;
 	}
 
@@ -633,7 +631,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 		jvRoot["root"] = m_strAppFolder;
 		if (!GetSignFolderInfo(m_strAppFolder, jvRoot, true))
 		{
-			ZLog::ErrorV(">>> Can't Get BundleID, BundleVersion, or BundleExecute in Info.plist! %s\n", m_strAppFolder.c_str());
+			ZLog::ErrorV("Couldn't get app information in Info.plist! %s\n", m_strAppFolder.c_str());
 			return false;
 		}
 		if (!GetObjectsToSign(m_strAppFolder, jvRoot))
@@ -647,13 +645,13 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 		jvRoot.readPath("./.zsign_cache/%s.json", strCacheName.c_str());
 	}
 
-	ZLog::PrintV(">>> Signing: \t%s ...\n", m_strAppFolder.c_str());
-	ZLog::PrintV(">>> AppName: \t%s\n", jvRoot["name"].asCString());
-	ZLog::PrintV(">>> BundleId: \t%s\n", jvRoot["bid"].asCString());
-	ZLog::PrintV(">>> BundleVer: \t%s\n", jvRoot["bver"].asCString());
-	ZLog::PrintV(">>> TeamId: \t%s\n", m_pSignAsset->m_strTeamId.c_str());
-	ZLog::PrintV(">>> SubjectCN: \t%s\n", m_pSignAsset->m_strSubjectCN.c_str());
-	ZLog::PrintV(">>> ReadCache: \t%s\n", m_bForceSign ? "NO" : "YES");
+	ZLog::PrintV("Signing: %s\n", m_strAppFolder.c_str());
+	ZLog::PrintV("App Name: %s\n", jvRoot["name"].asCString());
+	ZLog::PrintV("Bundle ID: %s\n", jvRoot["bid"].asCString());
+	ZLog::PrintV("Bundle Version: %s\n", jvRoot["bver"].asCString());
+	ZLog::PrintV("Required OS Version: %s\n", jvRoot["ros"].asCString());
+	ZLog::PrintV("Certificate Name: %s\n", m_pSignAsset->m_strSubjectCN.c_str());
+	ZLog::PrintV("Cache Enabled: %s\n", m_bForceSign ? "NO" : "YES");
 
 	if (SignNode(jvRoot))
 	{

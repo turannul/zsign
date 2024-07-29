@@ -1,5 +1,4 @@
 #include "base64.h"
-#include <string.h>
 
 #define B0(a) (a & 0xFF)
 #define B1(a) (a >> 8 & 0xFF)
