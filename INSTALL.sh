@@ -47,5 +47,7 @@ else
     fi
 
     # Compile
-    g++ src/zsign/*.cpp -I"$Linux_Include_Path" -L"$Linux_Lib_Path" -lssl -lcrypto -O3 -o build/zsign
+    mkdir build; cd build &&
+    cmake .. && 
+    make
 fi
