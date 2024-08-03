@@ -21,7 +21,7 @@ elif command -v brew > /dev/null; then
     echo "Using Linux Brew to install dependencies..."
     brew update
     brew install zip unzip make gcc zlib openssl@1.1 pkg-config || { echo "Failed to install Linux Brew dependencies"; exit 1; }
-    sudo apt-get install checkinstall
+    sudo apt-get install -y checkinstall
     # export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
     # export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
     build
