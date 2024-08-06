@@ -8,6 +8,7 @@
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
 #include <openssl/conf.h>
+#include <openssl/provider.h>
 
 bool GetCertSubjectCN(const string &strCertData, string &strSubjectCN);
 bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput);

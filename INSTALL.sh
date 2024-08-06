@@ -17,7 +17,7 @@ compile() {
 
 if [[ "$(uname)" == "Darwin" ]]; then
     echo "Installing macOS dependencies..."
-    brew install zip unzip openssl@1.1 -q || { echo "Failed to install macOS dependencies"; exit 1; }
+    brew install zip unzip openssl@3 -q || { echo "Failed to install macOS dependencies"; exit 1; }
     compile
 
 else
