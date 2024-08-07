@@ -17,12 +17,12 @@ compile() {
 
 if [[ "$(uname)" == "Darwin" ]]; then
     echo "Installing macOS dependencies..."
-    brew install zip unzip openssl@3 -q || { echo "Failed to install macOS dependencies"; exit 1; }
+    brew install zip unzip openssl@3 cmake -q || { echo "Failed to install macOS dependencies"; exit 1; }
     compile
 
 else
     echo "Updating and installing Linux dependencies..."
     sudo apt-get update 
-    sudo apt-get install -y zip unzip build-essential checkinstall zlib1g-dev libssl-dev pkg-config || { echo "Failed to install Linux dependencies"; exit 1; }
+    sudo apt-get install -y zip unzip build-essential checkinstall zlib1g-dev libssl-dev pkg-config cmake || { echo "Failed to install Linux dependencies"; exit 1; }
     compile
 fi
