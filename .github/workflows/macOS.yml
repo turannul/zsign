@@ -1,0 +1,23 @@
+name: Build & Test (macOS)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build
+      run: |
+        chmod +x INSTALL.sh
+        ./INSTALL.sh
+
+    - name: Test
+      run: ctest
+

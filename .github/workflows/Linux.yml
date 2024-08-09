@@ -1,4 +1,4 @@
-name: Build & Test
+name: Build & Test (Linux)
 
 on:
   push:
@@ -19,5 +19,5 @@ jobs:
         ./INSTALL.sh
 
     - name: Test
-      run: ctest --output-on-failure
+      run: ctest
 
