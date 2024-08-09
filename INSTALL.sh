@@ -31,7 +31,7 @@ chk_brew_pkg() {
         echo "$1 is already installed"
     else
         echo "$1 is not installed, installing..."
-        brew install "$1"
+        brew install "$1" -q
     fi
 }
 
@@ -64,7 +64,7 @@ else
     chk_apt_pkg zip
     chk_apt_pkg unzip
     chk_apt_pkg build-essential
-    chk_apt_pkg chkinstall
+    chk_apt_pkg checkinstall
     chk_apt_pkg zlib1g-dev
     chk_apt_pkg libssl-dev
     chk_apt_pkg cmake
