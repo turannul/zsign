@@ -19,8 +19,4 @@ jobs:
         ./INSTALL.sh
 
     - name: Test
-      run: |
-        ctest
-        git add .
-        git commit -m "adding files"
-        git push
+      run: ctest --rerun-failed --output-on-failure
