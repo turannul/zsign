@@ -13,7 +13,9 @@ compile() {
     make_dir
     echo "Compiling..."
     cd build && cmake .. && make
-    mv -v zsign ../zsign
+    mv -v zsign /usr/local/bin/zsign
+    chmod -v 777 /usr/local/bin/zsign
+    rm -rf build
 }
 
 if [[ "$(uname)" == "Darwin" ]]; then
