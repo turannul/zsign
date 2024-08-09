@@ -19,5 +19,5 @@ jobs:
         ./INSTALL.sh
 
     - name: Test
-      run: ctest
+      run: ctest --rerun-failed --output-on-failure
 
