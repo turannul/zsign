@@ -2,56 +2,68 @@
 
 set -e
 
-make_dir() {
+compile() {
     if [ -d build ]; then
         echo "Removing old build directory..."
         rm -rf build/
     fi
-
-    echo "Creating build directory"
     mkdir -p build
-}
 
-compile() {
-    make_dir
-    echo "Compiling..."
+    echo "Starting build process..."
     cd build && cmake .. && make
     if [ -f zsign ]; then
-        sudo mv zsign /usr/local/bin/zsign
-        echo "zsign installed to /usr/local/bin/"
+        echo "Build completed successfully"
+        mv zsign ../Test/zsign
+        test_zsign
     else
-        echo "Build failed: zsign not found"
+        echo "Build failed. Please check the build output for errors."
         exit 1
     fi
-    rm -rf ../build
+}
+
+test_zsign() {
+    cd ../
+    echo "Running tests..."
+    if ctest --rerun-failed --output-on-failure; then
+        echo "All tests passed successfully."
+        echo "Installing binary to /usr/local/bin/"
+        mv -v Test/zsign /usr/local/bin/zsign
+    else
+        echo "One or more tests failed. Check test output for details."
+        exit 1
+    fi
+
+    echo "Cleaning up build directory..."
+    rm -rf build
 }
 
 chk_brew_pkg() {
     if brew list --formula | grep -q "$1"; then
-        echo "$1 is already installed"
+        echo "$1 is already installed."
     else
-        echo "$1 is not installed, installing..."
+        echo "$1 is not installed. Installing now..."
         brew install "$1" -q
     fi
 }
 
 chk_apt_pkg() {
     if dpkg -l | grep -q "$1"; then
-        echo "$1 is already installed"
+        echo "$1 is already installed."
     else
-        echo "$1 is not installed, installing..."
-        sudo apt-get update
+        echo "$1 is not installed. Installing now..."
+        sudo apt-get update -q
         sudo apt-get install -y "$1"
     fi
 }
 
 if [[ "$(uname)" == "Darwin" ]]; then
-    echo "Installing macOS dependencies..."
+    echo "Setting up macOS environment..."
     if ! command -v brew &> /dev/null; then
-        echo "Homebrew not found, please install it first."
+        echo "Homebrew is not installed. Please install it before proceeding."
         exit 1
     fi
 
+    echo "Checking macOS dependencies..."
     chk_brew_pkg zip
     chk_brew_pkg unzip
     chk_brew_pkg openssl@3
@@ -60,7 +72,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
     compile
 
 else
-    echo "Updating and installing Linux dependencies..."
+    echo "Updating Linux environment..."
+    echo "Checking Linux dependencies..."
     chk_apt_pkg zip
     chk_apt_pkg unzip
     chk_apt_pkg build-essential
