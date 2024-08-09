@@ -26,6 +26,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
 else
     echo "Updating and installing Linux dependencies..."
     sudo apt-get update 
-    sudo apt-get install -y zip unzip build-essential checkinstall zlib1g-dev libssl-dev pkg-config cmake || { echo "Failed to install Linux dependencies"; exit 1; }
+    sudo apt-get install -y zip unzip build-essential checkinstall zlib1g-dev libssl-dev cmake || { echo "Failed to install Linux dependencies"; exit 1; }
     compile
 fi
