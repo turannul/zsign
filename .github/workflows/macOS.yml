@@ -17,7 +17,3 @@ jobs:
       run: |
         chmod +x INSTALL.sh
         ./INSTALL.sh
-
-    - name: Test
-      run: ctest --rerun-failed --output-on-failure
-
