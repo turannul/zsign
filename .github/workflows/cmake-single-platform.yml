@@ -14,8 +14,10 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Build
-      run: chmod +x INSTALL.sh && ./INSTALL.sh
+      run: |
+        chmod +x INSTALL.sh
+        ./INSTALL.sh
 
     - name: Test
-      run: ctest
+      run: ctest --output-on-failure
 
