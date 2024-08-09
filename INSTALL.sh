@@ -25,9 +25,9 @@ compile() {
 test_zsign() {
     echo "Running tests..."
     if ctest --rerun-failed --output-on-failure; then
-        echo "All tests passed successfully."
+        echo "All tests passed."
         echo "Installing binary to /usr/local/bin/"
-        mv -v Test/zsign /usr/local/bin/zsign
+        mv Test/zsign /usr/local/bin/zsign
     else
         echo "One or more tests failed. Check test output for details."
         exit 1
