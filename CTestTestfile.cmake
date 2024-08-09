@@ -20,9 +20,11 @@ add_test(Encrypted_Cert
             -p 1234 
             ${ipa}
             -o /tmp/successful_Test.ipa)
+            --force
 
 add_test(Unencrypted_Cert
     ${zsign_exec} -k ${unencrypted_p12}
             -m ${provision_profile}
             ${ipa} 
             -o /tmp/successful_Test.ipa)
+            --force
