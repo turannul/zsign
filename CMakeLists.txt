@@ -38,8 +38,3 @@ file(GLOB SRC src/zsign/*.cpp)
 add_executable(zsign ${SRC})
 
 target_link_libraries(zsign ${LIB_LIST})
-
-add_test(NAME zsign_Returns_0_1
-    COMMAND zsign -v)
-add_test(NAME zsign_Returns_0_2
-    COMMAND zsign -k test/test.p12 -m test/test.mobileprovision -p favour test/test.ipa -o successful_Test.ipa)

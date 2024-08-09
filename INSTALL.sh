@@ -13,6 +13,7 @@ compile() {
     make_dir
     echo "Compiling..."
     cd build && cmake .. && make
+    mv -v zsign ../zsign
 }
 
 if [[ "$(uname)" == "Darwin" ]]; then
