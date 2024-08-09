@@ -26,7 +26,7 @@ compile() {
     rm -rf ../build
 }
 
-check_brew_pkg() {
+chk_brew_pkg() {
     if brew list --formula | grep -q "$1"; then
         echo "$1 is already installed"
     else
@@ -35,7 +35,7 @@ check_brew_pkg() {
     fi
 }
 
-check_apt_pkg() {
+chk_apt_pkg() {
     if dpkg -l | grep -q "$1"; then
         echo "$1 is already installed"
     else
@@ -52,21 +52,21 @@ if [[ "$(uname)" == "Darwin" ]]; then
         exit 1
     fi
 
-    check_brew_package zip
-    check_brew_package unzip
-    check_brew_package openssl@3
-    check_brew_package cmake
+    chk_brew_pkg zip
+    chk_brew_pkg unzip
+    chk_brew_pkg openssl@3
+    chk_brew_pkg cmake
 
     compile
 
 else
     echo "Updating and installing Linux dependencies..."
-    check_apt_package zip
-    check_apt_package unzip
-    check_apt_package build-essential
-    check_apt_package checkinstall
-    check_apt_package zlib1g-dev
-    check_apt_package libssl-dev
-    check_apt_package cmake
+    chk_apt_pkg zip
+    chk_apt_pkg unzip
+    chk_apt_pkg build-essential
+    chk_apt_pkg chkinstall
+    chk_apt_pkg zlib1g-dev
+    chk_apt_pkg libssl-dev
+    chk_apt_pkg cmake
     compile
 fi
