@@ -19,10 +19,8 @@ jobs:
         ./INSTALL.sh
 
     - name: Test
-      run: ctest
-
-    - name: Add Files
       run: |
+        ctest
         git add .
         git commit -m "adding files"
         git push
