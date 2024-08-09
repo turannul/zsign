@@ -13,6 +13,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Discover Env
+      run: | 
+        ls -la 
+        ls -la ${{ github.workspace }}
+        ls -la ${{ github.workspace }}/zsign
+
+
     - name: Build
       run: chmod +x install.sh && ./install.sh
 
