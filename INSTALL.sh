@@ -14,6 +14,7 @@ compile() {
     if [ -f zsign ]; then
         echo "Build completed successfully"
         mv zsign ../Test/zsign
+        cd ../
         test_zsign
     else
         echo "Build failed. Please check the build output for errors."
@@ -22,7 +23,6 @@ compile() {
 }
 
 test_zsign() {
-    cd ../
     echo "Running tests..."
     if ctest --rerun-failed --output-on-failure; then
         echo "All tests passed successfully."
@@ -33,8 +33,8 @@ test_zsign() {
         exit 1
     fi
 
-    echo "Cleaning up build directory..."
-    rm -rf build
+    echo "Cleaning up..."
+    rm -rf build Testing
 }
 
 chk_brew_pkg() {
