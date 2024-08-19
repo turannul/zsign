@@ -34,7 +34,7 @@ include_directories(${ZLIB_INCLUDE_DIR})
 list(APPEND LIB_LIST ${ZLIB_LIBRARIES})
 
 add_subdirectory(minizip)
-include_directories(${CMAKE_SOURCE_DIR}/minizip)
+include_directories(${CMAKE_SOURCE_DIR}/minizip/)
 list(APPEND LIB_LIST minizip)
 
 file(GLOB SRC src/zsign/*.cpp)

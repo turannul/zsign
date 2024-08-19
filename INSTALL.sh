@@ -15,7 +15,6 @@ compile() {
         echo "Build completed successfully"
         mv zsign ../Test/zsign
         cd ../
-        test_zsign
     else
         echo "Build failed. Please check the build output for errors."
         exit 1
@@ -70,6 +69,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
     chk_brew_pkg cmake
 
     compile
+    test_zsign
 
 else
     echo "Updating Linux environment..."
@@ -81,5 +81,8 @@ else
     chk_apt_pkg zlib1g-dev
     chk_apt_pkg libssl-dev
     chk_apt_pkg cmake
+
     compile
+    test_zsign
+
 fi
