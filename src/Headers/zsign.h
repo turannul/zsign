@@ -6,3 +6,5 @@
 #include <libgen.h>
 #include <dirent.h>
 #include <getopt.h>
+#include <minizip/miniunz.h>
+#include <minizip/zip.h>
