@@ -66,7 +66,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
     echo "Checking macOS dependencies..."
     # chk_brew_pkg zip
     # chk_brew_pkg unzip
-    chk_brew_pkg zlib
     chk_brew_pkg openssl@3
     chk_brew_pkg cmake
 
@@ -79,7 +78,6 @@ else
     # chk_apt_pkg unzip
     chk_apt_pkg build-essential
     chk_apt_pkg checkinstall
-    chk_apt_pkg zlib1g 
     chk_apt_pkg zlib1g-dev
     chk_apt_pkg libssl-dev
     chk_apt_pkg cmake
