@@ -33,6 +33,12 @@ message("zlib libraries: ${ZLIB_LIBRARIES}")
 include_directories(${ZLIB_INCLUDE_DIR})
 list(APPEND LIB_LIST ${ZLIB_LIBRARIES})
 
+find_package(LIBZIP REQUIRED)
+message ("libzip incl: ${libzip_incl}")
+message ("libzip libs: ${libzip_libs}")
+include_directories(${libzip_incl})
+list(APPEND LIB_LIST ${linzip_libs})
+
 file(GLOB SRC src/zsign/*.cpp)
 
 add_executable(zsign ${SRC})

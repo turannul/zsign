@@ -6,3 +6,4 @@
 #include <libgen.h>
 #include <dirent.h>
 #include <getopt.h>
+#include <zlib.h>
