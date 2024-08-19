@@ -33,6 +33,11 @@ message("zlib libraries: ${ZLIB_LIBRARIES}")
 include_directories(${ZLIB_INCLUDE_DIR})
 list(APPEND LIB_LIST ${ZLIB_LIBRARIES})
 
+include_directories(minizip)
+set(MiniZip "minizip")
+message ("zip lib: ${MiniZip}")
+list(APPEND LIB_LIST ${MiniZip})
+
 file(GLOB SRC src/zsign/*.cpp)
 
 add_executable(zsign ${SRC})
