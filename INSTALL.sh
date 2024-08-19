@@ -15,6 +15,7 @@ compile() {
         echo "Build completed successfully"
         mv zsign ../Test/zsign
         cd ../
+        test_zsign
     else
         echo "Build failed. Please check the build output for errors."
         exit 1
@@ -63,26 +64,22 @@ if [[ "$(uname)" == "Darwin" ]]; then
     fi
 
     echo "Checking macOS dependencies..."
-    # chk_brew_pkg zip
-    # chk_brew_pkg unzip
+    chk_brew_pkg zip
+    chk_brew_pkg unzip
     chk_brew_pkg openssl@3
     chk_brew_pkg cmake
 
     compile
-    test_zsign
 
 else
     echo "Updating Linux environment..."
     echo "Checking Linux dependencies..."
-    # chk_apt_pkg zip
-    # chk_apt_pkg unzip
+    chk_apt_pkg zip
+    chk_apt_pkg unzip
     chk_apt_pkg build-essential
     chk_apt_pkg checkinstall
     chk_apt_pkg zlib1g-dev
     chk_apt_pkg libssl-dev
     chk_apt_pkg cmake
-
     compile
-    test_zsign
-
 fi
