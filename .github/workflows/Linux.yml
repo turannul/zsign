@@ -13,7 +13,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build
+    - name: Set up environment
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -y build-essential cmake checkinstall zlib1g-dev libssl-dev
+
+    - name: Build and Test
       run: |
         chmod +x INSTALL.sh
         ./INSTALL.sh
+
+    - name: Upload Executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: zsign-binary
+        path: /usr/local/bin/zsign

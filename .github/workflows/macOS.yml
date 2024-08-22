@@ -17,3 +17,13 @@ jobs:
       run: |
         chmod +x INSTALL.sh
         ./INSTALL.sh
+
+    - name: Set up environment
+      run: |
+        brew install zip unzip openssl@3 cmake
+
+    - name: Upload Executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: zsign-binary
+        path: /usr/local/bin/zsign
