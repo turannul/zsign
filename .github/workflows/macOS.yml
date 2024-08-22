@@ -20,7 +20,10 @@ jobs:
 
     - name: Set up environment
       run: |
-        brew install zip unzip openssl@3 cmake
+        brew install zip 
+        brew install unzip 
+        brew install openssl@3 
+        brew install cmake
 
     - name: Upload Executable
       uses: actions/upload-artifact@v3
