@@ -26,3 +26,24 @@ add_test(Unencrypted_Cert
             -m ${provision_profile}
             ${ipa} 
             -o /tmp/Unencrypted_Test.ipa)
+
+add_test(Bundle_ID
+    ${zsign_exec} -k ${unencrypted_p12}
+            -m ${provision_profile}
+            ${ipa} 
+            -o /tmp/Unencrypted_Test.ipa)
+            --bundle_id xyz.turannul.test
+
+add_test(Bundle_Name
+    ${zsign_exec} -k ${unencrypted_p12}
+            -m ${provision_profile}
+            ${ipa} 
+            -o /tmp/Unencrypted_Test.ipa)
+            --bundle_name TestApp
+
+add_test(Bundle_Version
+    ${zsign_exec} -k ${unencrypted_p12}
+            -m ${provision_profile}
+            ${ipa} 
+            -o /tmp/Unencrypted_Test.ipa)
+            --bundle_version 1.0.0
