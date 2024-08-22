@@ -191,11 +191,12 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 	for (set<string>::iterator it = setFiles.begin(); it != setFiles.end(); it++)
 	{
 		string strKey = *it;
-		if(remove_embedded==1 && strKey=="embedded.mobileprovision"){
-        string filePath = strFolder+"/embedded.mobileprovision";
-        remove(filePath.data());
-        continue;
-        }
+		if (remove_embedded == 1 && strKey == "embedded.mobileprovision")
+		{
+			string filePath = strFolder + "/embedded.mobileprovision";
+			remove(filePath.data());
+			continue;
+		}
 		string strFile = strFolder + "/" + strKey;
 		string strFileSHA1Base64;
 		string strFileSHA256Base64;
@@ -312,7 +313,7 @@ void ZAppBundle::GetNodeChangedFiles(JValue &jvNode)
 	}
 
 	if ("/" == jvNode["path"])
-	{ //root
+	{ // root
 		jvNode["changed"].push_back("embedded.mobileprovision");
 	}
 }
@@ -388,7 +389,7 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 	}
 
 	if (m_bForceSign || jvCodeRes.isNull())
-	{ //create
+	{ // create
 		if (!GenerateCodeResources(strBaseFolder, jvCodeRes))
 		{
 			ZLog::ErrorV("Create CodeResources Failed! %s\n", strBaseFolder.c_str());
@@ -396,7 +397,7 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 		}
 	}
 	else if (jvNode.has("changed"))
-	{ //use existsed
+	{ // use existsed
 		for (size_t i = 0; i < jvNode["changed"].size(); i++)
 		{
 			string strFile = jvNode["changed"][i].asCString();
@@ -433,7 +434,7 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 
 	bool bForceSign = m_bForceSign;
 	if ("/" == strFolder && !m_strDyLibPath.empty())
-	{ //inject dylib
+	{ // inject dylib
 		macho.InjectDyLib(m_bWeakInject, m_strDyLibPath.c_str(), bForceSign);
 	}
 
@@ -498,7 +499,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 	}
 
 	if (!strBundleID.empty() || !strDisplayName.empty() || !strBundleVersion.empty())
-	{ //modify bundle id
+	{ // modify bundle id
 		JValue jvInfoPlist;
 		if (jvInfoPlist.readPListPath("%s/Info.plist", m_strAppFolder.c_str()))
 		{
@@ -509,7 +510,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 				jvInfoPlist["CFBundleIdentifier"] = strBundleID;
 				ZLog::PrintV("BundleId: %s -> %s\n", strOldBundleID.c_str(), strBundleID.c_str());
 
-				//modify plugins bundle id
+				// modify plugins bundle id
 				vector<string> arrPlugIns;
 				GetPlugIns(m_strAppFolder, arrPlugIns);
 				for (size_t i = 0; i < arrPlugIns.size(); i++)
@@ -569,6 +570,12 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 				ZLog::PrintV("BundleName: %s -> %s\n", strOldDisplayName.c_str(), strDisplayName.c_str());
 			}
 
+			if (!strBundleVersion.empty())
+			{
+				string strOldBundleVersion = jvInfoPlist["CFBundleShortVersionString"];
+				jvInfoPlist["CFBundleShortVersionString"] = strBundleVersion;
+				ZLog::PrintV("BundleVersion: %s -> %s\n", strOldBundleVersion.c_str(), strBundleVersion.c_str());
+			}
 			jvInfoPlist.writePListPath("%s/Info.plist", m_strAppFolder.c_str());
 		}
 		else
@@ -598,13 +605,13 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 	}
 
 	if (!WriteFile(pSignAsset->m_strProvisionData, "%s/embedded.mobileprovision", m_strAppFolder.c_str()))
-	{ //embedded.mobileprovision
+	{ // embedded.mobileprovision
 		ZLog::ErrorV("Can't Write embedded.mobileprovision!\n");
 		return false;
 	}
 
 	if (!strDyLibFile.empty())
-	{ //inject dylib
+	{ // inject dylib
 		string strDyLibData;
 		ReadFile(strDyLibFile.c_str(), strDyLibData);
 		if (!strDyLibData.empty())
