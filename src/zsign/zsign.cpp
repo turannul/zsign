@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 			if (0 == chdir(strBaseFolder.c_str())) {
 				uZipLevel = uZipLevel > 9 ? 9 : uZipLevel;
 				RemoveFile(strOutputFile.c_str());
-				SystemExec("7z a -tzip -%u '%s' Payload", uZipLevel, strOutputFile.c_str());
+				SystemExec("7z a -tzip -mx=%u '%s' Payload", uZipLevel, strOutputFile.c_str());
 				chdir(szOldFolder);
 				if (!IsFileExists(strOutputFile.c_str())) {
 					ZLog::Error("Compress Failed!\n");
