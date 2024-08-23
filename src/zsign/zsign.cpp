@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 	if (bZipFile) {
 		bForce = true;
 		bEnableCache = false;
-		StringFormat(strFolder, "/var/cache/zsign_cache_%llu", timer.Reset());
+		StringFormat(strFolder, "/var/tmp/zsign_folder_%llu", timer.Reset());
 		ZLog::PrintV("Extracting: %s (%s) -> %s\n", strPath.c_str(), GetFileSizeString(strPath.c_str()).c_str(), strFolder.c_str());
 		RemoveFolder(strFolder.c_str());
 		if (!SystemExec("7z x '%s' -y -o'%s'", strPath.c_str(), strFolder.c_str())) {
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 	bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bEnableCache);
 	timer.PrintResult(bRet, "Signed %s!", bRet ? "OK" : "Failed");
 
-	if (bInstall && strOutputFile.empty()) { StringFormat(strOutputFile, "/tmp/zsign_temp_%llu.ipa", GetMicroSecond()); }
+	if (bInstall && strOutputFile.empty()) { StringFormat(strOutputFile, "/var/tmp/zsign_temp_%llu.ipa", GetMicroSecond()); }
 
 	if (!strOutputFile.empty()) {
 		timer.Reset();
@@ -220,8 +220,8 @@ int main(int argc, char *argv[])
 	}
 
 	if (bRet && bInstall) { SystemExec("ideviceinstaller -i '%s'", strOutputFile.c_str()); }
-	if (0 == strOutputFile.find("/tmp/zsign_tmp_")) { RemoveFile(strOutputFile.c_str()); }
-	if (0 == strFolder.find("/tmp/zsign_folder_")) { RemoveFolder(strFolder.c_str()); }
+	if (0 == strOutputFile.find("/var/tmp/zsign_tmp_")) { RemoveFile(strOutputFile.c_str()); }
+	if (0 == strFolder.find("/var/tmp/zsign_folder_")) { RemoveFolder(strFolder.c_str()); }
 
 	gtimer.Print("Success!");
 	return bRet ? 0 : -1;
