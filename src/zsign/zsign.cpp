@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 		StringFormat(strFolder, "/var/tmp/zsign_folder_%llu", timer.Reset());
 		ZLog::PrintV("Extracting: %s (%s) -> %s\n", strPath.c_str(), GetFileSizeString(strPath.c_str()).c_str(), strFolder.c_str());
 		RemoveFolder(strFolder.c_str());
-		if (!SystemExec("7z x '%s' -y -o'%s'", strPath.c_str(), strFolder.c_str())) {
+		if (!SystemExec("7z x \"%s\" -y -o\"%s\"", strPath.c_str(), strFolder.c_str())) {
 			RemoveFolder(strFolder.c_str());
 			ZLog::ErrorV("Extract Failed!\n");
 			return -1;
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 			if (0 == chdir(strBaseFolder.c_str())) {
 				uZipLevel = uZipLevel > 9 ? 9 : uZipLevel;
 				RemoveFile(strOutputFile.c_str());
-				SystemExec("7z a -tzip -mx=%u '%s' Payload", uZipLevel, strOutputFile.c_str());
+				SystemExec("7z a -tzip -mx=%u -y \"%s\" Payload", uZipLevel, strOutputFile.c_str());
 				chdir(szOldFolder);
 				if (!IsFileExists(strOutputFile.c_str())) {
 					ZLog::Error("Compress Failed!\n");
