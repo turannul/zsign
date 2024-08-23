@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 	if (bZipFile) {
 		bForce = true;
 		bEnableCache = false;
-		StringFormat(strFolder, "/tmp/zsign_folder_%llu", timer.Reset());
+		StringFormat(strFolder, "/var/cache/zsign_cache_%llu", timer.Reset());
 		ZLog::PrintV("Extracting: %s (%s) -> %s\n", strPath.c_str(), GetFileSizeString(strPath.c_str()).c_str(), strFolder.c_str());
 		RemoveFolder(strFolder.c_str());
 		if (!SystemExec("7z x '%s' -y -o'%s'", strPath.c_str(), strFolder.c_str())) {
