@@ -71,7 +71,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
     compile
 
 else
-    echo "Updating Linux environment..."
     echo "Checking Linux dependencies..."
     chk_apt_pkg p7zip
     chk_apt_pkg build-essential
