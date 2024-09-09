@@ -36,7 +36,6 @@ int usage()
 	ZLog::Print("-n, --bundle_name\tNew bundle name to change.\n");
 	ZLog::Print("-r, --bundle_version\tNew bundle version to change.\n");
 	ZLog::Print("--remove_embedded\tRemove emmbedded.mobileprovision.\n");
-	ZLog::Print("-e, --entitlements\tNew entitlements to change.\n");
 	ZLog::Print("-z, --zip_level\t\tCompressed level when output the ipa file. (0-9)\n");
 	ZLog::Print("-l, --dylib\t\tPath to inject dylib file.\n");
 	ZLog::Print("-w, --weak\t\tInject dylib as LC_LOAD_WEAK_DYLIB.\n");
@@ -64,11 +63,10 @@ int main(int argc, char *argv[])
 	string strDyLibFile;
 	string strOutputFile;
 	string strDisplayName;
-	string strEntitlementsFile;
 
 	int opt = 0;
 	int argslot = -1;
-	while (-1 != (opt = getopt_long(argc, argv, "dfvhc:k:m:o:ip:e:b:n:z:ql:w", options, &argslot))) {
+	while (-1 != (opt = getopt_long(argc, argv, "dfvhc:k:m:o:ip:b:n:z:ql:w", options, &argslot))) {
 		switch (opt) {
 		case 'd':
 			ZLog::SetLogLever(ZLog::E_DEBUG);
@@ -96,9 +94,6 @@ int main(int argc, char *argv[])
 			break;
 		case 'n':
 			strDisplayName = optarg;
-			break;
-		case 'e':
-			strEntitlementsFile = optarg;
 			break;
 		case 'l':
 			strDyLibFile = optarg;
@@ -161,7 +156,7 @@ int main(int argc, char *argv[])
 
 	ZTimer timer;
 	ZSignAsset zSignAsset;
-	if (!zSignAsset.Init(strCertFile, strPKeyFile, strProvFile, strEntitlementsFile, strPassword)) { return -1; }
+	if (!zSignAsset.Init(strCertFile, strPKeyFile, strProvFile, strPassword)) { return -1; }
 
 	bool bEnableCache = true;
 	string strFolder = strPath;

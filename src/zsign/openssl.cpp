@@ -571,10 +571,9 @@ ZSignAsset::ZSignAsset()
 	m_x509Cert = NULL;
 }
 
-bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPKeyFile, const string &strProvisionFile, const string &strEntitlementsFile, const string &strPassword)
+bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPKeyFile, const string &strProvisionFile, const string &strPassword)
 {
 	ReadFile(strProvisionFile.c_str(), m_strProvisionData);
-	ReadFile(strEntitlementsFile.c_str(), m_strEntitlementsData);
 	if (m_strProvisionData.empty())
 	{
 		ZLog::Error("Can't Find Provision File!\n");
@@ -588,10 +587,6 @@ bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPK
 		if (jvProv.readPList(strProvContent))
 		{
 			m_strTeamId = jvProv["TeamIdentifier"][0].asCString();
-			if (m_strEntitlementsData.empty())
-			{
-				jvProv["Entitlements"].writePList(m_strEntitlementsData);
-			}
 		}
 	}
 

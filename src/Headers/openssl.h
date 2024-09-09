@@ -22,13 +22,12 @@ public:
 
 public:
 	bool GenerateCMS(const string &strCDHashData, const string &strCDHashesPlist, const string &strCodeDirectorySlotSHA1, const string &strAltnateCodeDirectorySlot256, string &strCMSOutput);
-	bool Init(const string &strSignerCertFile, const string &strSignerPKeyFile, const string &strProvisionFile, const string &strEntitlementsFile, const string &strPassword);
+	bool Init(const string &strSignerCertFile, const string &strSignerPKeyFile, const string &strProvisionFile, const string &strPassword);
 
 public:
 	string m_strTeamId;
 	string m_strSubjectCN;
 	string m_strProvisionData;
-	string m_strEntitlementsData;
 
 private:
 	void *m_evpPKey;
