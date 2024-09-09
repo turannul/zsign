@@ -17,14 +17,13 @@ const struct option options[] = {
 	{"zip_level", required_argument, NULL, 'z'},
 	{"dylib", required_argument, NULL, 'l'},
 	{"weak", no_argument, NULL, 'w'},
-	{"install", no_argument, NULL, 'i'},
 	{"quiet", no_argument, NULL, 'q'},
 	{"help", no_argument, NULL, 'h'},
 	{}};
 
 int usage()
 {
-	ZLog::Print("Usage: zsign [-qfdi] [-k privkey.p12 & privkey.pem] [-m mobile.provision] [-o signed.ipa] unsigned.ipa\n");
+	ZLog::Print("Usage: zsign [-qfd] [-k privkey.p12 & privkey.pem] [-m mobile.provision] [-o signed.ipa] unsigned.ipa\n");
 	ZLog::Print("Options:\n");
 	ZLog::Print("-k, --pkey\t\tPath to private key or p12 file. (PEM or DER format)\n");
 	ZLog::Print("-m, --prov\t\tPath to provisioning profile.\n");
@@ -41,7 +40,6 @@ int usage()
 	ZLog::Print("-z, --zip_level\t\tCompressed level when output the ipa file. (0-9)\n");
 	ZLog::Print("-l, --dylib\t\tPath to inject dylib file.\n");
 	ZLog::Print("-w, --weak\t\tInject dylib as LC_LOAD_WEAK_DYLIB.\n");
-	ZLog::Print("-i, --install\t\tInstall ipa file using ideviceinstaller command for test.\n");
 	ZLog::Print("-q, --quiet\t\tQuiet operation.\n");
 	ZLog::Print("-v, --version\t\tShow version.\n");
 	ZLog::Print("-h, --help\t\tShow this message.\n");
@@ -54,7 +52,6 @@ int main(int argc, char *argv[])
 	ZTimer gtimer;
 
 	bool bForce = false;
-	bool bInstall = false;
 	bool bWeakInject = false;
 	uint32_t uZipLevel = 0;
 	string strCertFile;
@@ -105,9 +102,6 @@ int main(int argc, char *argv[])
 			break;
 		case 'l':
 			strDyLibFile = optarg;
-			break;
-		case 'i':
-			bInstall = true;
 			break;
 		case 'o':
 			strOutputFile = GetCanonicalizePath(optarg);
@@ -191,7 +185,7 @@ int main(int argc, char *argv[])
 	bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bEnableCache);
 	timer.PrintResult(bRet, "Signed %s!", bRet ? "OK" : "Failed");
 
-	if (bInstall && strOutputFile.empty()) { StringFormat(strOutputFile, "/var/tmp/zsign_temp_%llu.ipa", GetMicroSecond()); }
+	if (strOutputFile.empty()) { StringFormat(strOutputFile, "/var/tmp/zsign_temp_%llu.ipa", GetMicroSecond()); }
 
 	if (!strOutputFile.empty()) {
 		timer.Reset();
@@ -219,7 +213,6 @@ int main(int argc, char *argv[])
 		timer.PrintResult(true, "Compress OK! (%s)", GetFileSizeString(strOutputFile.c_str()).c_str());
 	}
 
-	if (bRet && bInstall) { SystemExec("ideviceinstaller -i '%s'", strOutputFile.c_str()); }
 	if (0 == strOutputFile.find("/var/tmp/zsign_tmp_")) { RemoveFile(strOutputFile.c_str()); }
 	if (0 == strFolder.find("/var/tmp/zsign_folder_")) { RemoveFolder(strFolder.c_str()); }
 
