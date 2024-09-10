@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
     bool bForce = false;
     bool bWeakInject = false;
-	bool bRemoveEmbed = false;
+	bool bRemoveEmbedded = false;
     uint32_t uZipLevel = 0;
     string strCertFile;
     string strPKeyFile;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
             strDisplayName = optarg;
             break;
         case 'R':
-            bRemoveEmbed = true;
+            bRemoveEmbedded = true;
             break;
         case 'l':
             strDyLibFile = optarg;
