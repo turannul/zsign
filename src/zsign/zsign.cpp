@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
 	int opt = 0;
 	int argslot = -1;
-	while (-1 != (opt = getopt_long(argc, argv, "dfvhc:k:m:o:ip:b:n:z:ql:w", options, &argslot))) {
+	while (-1 != (opt = getopt_long(argc, argv, "dfvhc:k:m:p:b:n:r:o:z:l:wq", options, &argslot))) {
 		switch (opt) {
 		case 'd':
 			ZLog::SetLogLever(ZLog::E_DEBUG);
@@ -116,8 +116,10 @@ int main(int argc, char *argv[])
 		}
 		break;
 		case 'h':
-		case '?':
 			return usage();
+			break;
+		default:
+			fprintf(stderr, "Unknown option: %c\n", opt);
 			break;
 		}
 		ZLog::DebugV("Option:\t-%c, %s\n", opt, optarg);
