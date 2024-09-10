@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
+# shellcheck shell=bash
 set -e
 
 compile() {
