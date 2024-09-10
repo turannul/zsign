@@ -1,7 +1,6 @@
 #include "../Headers/zsign.h"
 
 const struct option options[] = {
-	// k:m:c:o:p:b:n:r:z:l:dfewqvh
     {"pkey", required_argument, NULL, 'k'},
     {"prov", required_argument, NULL, 'm'},
     {"cert", required_argument, NULL, 'c'},
@@ -17,7 +16,7 @@ const struct option options[] = {
     {"dylib", required_argument, NULL, 'l'},
     {"weak", no_argument, NULL, 'w'},
     {"quiet", no_argument, NULL, 'q'},
-	{"version", no_argument, NULL, 'v'},
+    {"version", no_argument, NULL, 'v'},
     {"help", no_argument, NULL, 'h'},
 };
 
@@ -52,7 +51,7 @@ int main(int argc, char *argv[])
 
     bool bForce = false;
     bool bWeakInject = false;
-	bool bRemoveEmbedded = false;
+    bool bRemoveEmbedded = false;
     uint32_t uZipLevel = 0;
     string strCertFile;
     string strPKeyFile;
@@ -67,7 +66,7 @@ int main(int argc, char *argv[])
 
     int opt = 0;
     int argslot = -1;
-	opterr = 0;
+    opterr = 0;
     while (-1 != (opt = getopt_long(argc, argv, "k:m:c:o:p:b:n:r:z:l:dfewqvh", options, &argslot))) {
         switch (opt) {
         case 'd':
@@ -121,11 +120,11 @@ int main(int argc, char *argv[])
         }
         case 'h':
             return usage();
-			break;
-		default:
-			printf("Unknown option.");
-			return 1;
-		}
+            break;
+        default:
+            printf("Unknown option.");
+            return 1;
+        }
         ZLog::DebugV("Option:\t-%c, %s\n", opt, optarg);
     }
 
@@ -183,7 +182,7 @@ int main(int argc, char *argv[])
 
     timer.Reset();
     ZAppBundle bundle;
-    bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bRemoveEmbedded, bEnableCache);
+    bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bEnableCache, bRemoveEmbedded);
     timer.PrintResult(bRet, "Signed %s!", bRet ? "OK" : "Failed");
 
     if (strOutputFile.empty()) { StringFormat(strOutputFile, "/var/tmp/zsign_temp_%llu.ipa", GetMicroSecond()); }
