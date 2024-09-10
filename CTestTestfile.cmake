@@ -12,38 +12,89 @@ message("iPA found: ${ipa}")
 
 
 add_test(Exec_cmd
-    ${zsign_exec} -v)
+    ${zsign_exec} -V)
+
+add_test(exec#2 
+    ${zsign_exec} --version)
 
 add_test(Encrypted_Cert
-    ${zsign_exec} -k ${encrypted_p12}
+    ${zsign_exec} -p ${encrypted_p12}
             -m ${provision_profile}
-            -p 1234 
+            -P 1234 
             ${ipa}
             -o /tmp/Encrypted_Test.ipa)
 
+add_test(Encrypted_Cert#2
+    ${zsign_exec} --pkey ${encrypted_p12}
+            --prov ${provision_profile}
+            --password 1234 
+            ${ipa}
+            --output /tmp/Encrypted_Test.ipa)
+
 add_test(Unencrypted_Cert
-    ${zsign_exec} -k ${unencrypted_p12}
+    ${zsign_exec} -p ${unencrypted_p12}
             -m ${provision_profile}
             ${ipa} 
             -o /tmp/Unencrypted_Test.ipa)
 
+add_test(Unencrypted_Cert#2
+    ${zsign_exec} --pkey ${unencrypted_p12}
+            --prov ${provision_profile}
+            ${ipa} 
+            --output /tmp/Unencrypted_Test.ipa)
+
 add_test(Bundle_ID
-    ${zsign_exec} -k ${unencrypted_p12}
+    ${zsign_exec} -p ${unencrypted_p12}
             -m ${provision_profile}
             ${ipa} 
             -o /tmp/Unencrypted_Test.ipa
+            -b xyz.turannul.test)
+
+add_test(Bundle_ID#2
+    ${zsign_exec} --pkey ${unencrypted_p12}
+            --prov ${provision_profile}
+            ${ipa} 
+            --output /tmp/Unencrypted_Test.ipa
             --bundle_id xyz.turannul.test)
 
 add_test(Bundle_Name
-    ${zsign_exec} -k ${unencrypted_p12}
+    ${zsign_exec} -p ${unencrypted_p12}
             -m ${provision_profile}
             ${ipa} 
             -o /tmp/Unencrypted_Test.ipa
+            -n TestApp)
+
+add_test(Bundle_Name#2
+    ${zsign_exec} --pkey ${unencrypted_p12}
+            --prov ${provision_profile}
+            ${ipa} 
+            --output /tmp/Unencrypted_Test.ipa
             --bundle_name TestApp)
 
 add_test(Bundle_Version
-    ${zsign_exec} -k ${unencrypted_p12}
+    ${zsign_exec} -p ${unencrypted_p12}
             -m ${provision_profile}
             ${ipa} 
             -o /tmp/Unencrypted_Test.ipa
+            -v 1.0.0)
+
+add_test(Bundle_Version#2
+    ${zsign_exec} --pkey ${unencrypted_p12}
+            --prov ${provision_profile}
+            ${ipa} 
+            --output /tmp/Unencrypted_Test.ipa
             --bundle_version 1.0.0)
+
+add_test(Remove_Embedded
+    ${zsign_exec} -p ${unencrypted_p12}
+            -m ${provision_profile}
+            ${ipa} 
+            -o /tmp/Unencrypted_Test_RemoveEmbedded.ipa
+            -e)
+
+add_test(Remove_Embedded#2
+    ${zsign_exec} --pkey ${unencrypted_p12}
+            --prov ${provision_profile}
+            ${ipa} 
+            --output /tmp/Unencrypted_Test_RemoveEmbedded.ipa
+            --remove_embedded)
