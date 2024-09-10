@@ -10,6 +10,7 @@ const struct option options[] = {
     {"bundle_version", required_argument, NULL, 'v'},
     {"zip_level", required_argument, NULL, 'z'},
     {"dylib", required_argument, NULL, 'l'},
+    {"entitlements", required_argument, NULL, 'E'},
     {"remove_embedded", no_argument, NULL, 'e'},
     {"debug", no_argument, NULL, 'd'},
     {"force", no_argument, NULL, 'f'},
@@ -32,6 +33,7 @@ int usage()
     ZLog::Print("-v, --bundle_version\tNew bundle version to change.\n");
     ZLog::Print("-z, --zip_level\t\tCompressed level when output the ipa file. (0-9)\n");
     ZLog::Print("-l, --dylib\t\tPath to inject dylib file.\n");
+    ZLog::Print("-E, --entitlements\tPath to entitlements file.\n");
     ZLog::Print("-e, --remove_embedded\tRemove emmbedded.mobileprovision.\n");
     ZLog::Print("-d, --debug\t\tGenerate debug output files. (.zsign_debug folder)\n");
     ZLog::Print("-f, --force\t\tForce sign without cache when signing folder.\n");
@@ -60,11 +62,12 @@ int main(int argc, char *argv[])
     string strDyLibFile;
     string strOutputFile;
     string strDisplayName;
+    string strEntitlementsFile;
 
     int opt = 0;
     int argslot = -1;
     opterr = 0;
-    while (-1 != (opt = getopt_long(argc, argv, "p:m:o:P:b:n:v:z:l:edfwqVh", options, &argslot))) {
+    while (-1 != (opt = getopt_long(argc, argv, "p:m:o:P:b:n:v:z:l:E:edfwqVh", options, &argslot))) {
         switch (opt) {
         case 'p':
             strPKeyFile = optarg;
@@ -92,6 +95,9 @@ int main(int argc, char *argv[])
             break;
         case 'l':
             strDyLibFile = optarg;
+            break;
+        case 'E':
+            strEntitlementsFile = optarg;
             break;
         case 'e':
             bRemoveEmbedded = true;
@@ -154,8 +160,7 @@ int main(int argc, char *argv[])
 
     ZTimer timer;
     ZSignAsset zSignAsset;
-    if (!zSignAsset.Init(strCertFile, strPKeyFile, strProvFile, strPassword)) { return -1; }
-
+    if (!zSignAsset.Init(strCertFile, strPKeyFile, strProvFile, strEntitlementsFile, strPassword)) { return -1; }
     bool bEnableCache = true;
     string strFolder = strPath;
     // True if it is an ipa file
