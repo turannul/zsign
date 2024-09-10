@@ -32,7 +32,6 @@
 #include <openssl/sha.h>
 
 using namespace std;
-extern int remove_embedded;
 #define LE(x) _Swap(x)
 #define BE(x) _Swap(x)
 

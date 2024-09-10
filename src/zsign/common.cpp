@@ -1,7 +1,5 @@
 #include "../Headers/common.h"
 
-int remove_embedded = 0;
-
 #define PARSEVALIST(szFormatArgs, szArgs)                       \
 	ZBuffer buffer;                                             \
 	char szBuffer[PATH_MAX] = {0};                              \

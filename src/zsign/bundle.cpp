@@ -6,6 +6,7 @@ ZAppBundle::ZAppBundle()
 	m_pSignAsset = NULL;
 	m_bForceSign = false;
 	m_bWeakInject = false;
+	m_bRemoveEmbedded = false;
 }
 
 bool ZAppBundle::FindAppFolder(const string &strFolder, string &strAppFolder)
@@ -191,10 +192,10 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 	for (set<string>::iterator it = setFiles.begin(); it != setFiles.end(); it++)
 	{
 		string strKey = *it;
-		if (remove_embedded == 1 && strKey == "embedded.mobileprovision")
+		if (m_bRemoveEmbedded)
 		{
-			string filePath = strFolder + "/embedded.mobileprovision";
-			remove(filePath.data());
+			string provPath = strFolder + "/embedded.mobileprovision";
+			remove(provPath.data());
 			continue;
 		}
 		string strFile = strFolder + "/" + strKey;
@@ -482,11 +483,13 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 							const string &strDyLibFile,
 							bool bForce,
 							bool bWeakInject,
-							bool bEnableCache)
+							bool bEnableCache,
+							bool bRemoveEmbedded)
 {
 	m_bForceSign = bForce;
 	m_pSignAsset = pSignAsset;
 	m_bWeakInject = bWeakInject;
+	m_bRemoveEmbedded = bRemoveEmbedded;
 	if (NULL == m_pSignAsset)
 	{
 		return false;

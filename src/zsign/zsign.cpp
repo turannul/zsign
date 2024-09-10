@@ -41,7 +41,7 @@ int usage()
     ZLog::Print("-q, --quiet\t\tQuiet operation.\n");
     ZLog::Print("-v, --version\t\tShow version.\n");
     ZLog::Print("-h, --help\t\tShow this message.\n");
-    ZLog::Print("Modified & Updated by Turann_ for favoursign bot.");
+    ZLog::Print("Modified for FavourSign by Turann_");
     return 0;
 }
 
@@ -117,8 +117,10 @@ int main(int argc, char *argv[])
             printf("version: 0.5.3\n");
             return 0;
         }
+		case '?':
         case 'h':
             return usage();
+			break;
         default:
             printf("Unknown option: %c\n", opt);
             return usage();
@@ -180,7 +182,7 @@ int main(int argc, char *argv[])
 
     timer.Reset();
     ZAppBundle bundle;
-    bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bEnableCache);
+    bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bRemoveEmbedded, bEnableCache);
     timer.PrintResult(bRet, "Signed %s!", bRet ? "OK" : "Failed");
 
     if (strOutputFile.empty()) { StringFormat(strOutputFile, "/var/tmp/zsign_temp_%llu.ipa", GetMicroSecond()); }
