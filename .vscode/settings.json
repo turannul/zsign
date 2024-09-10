@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.xm": "objective-cpp",
+        "*.x": "objective-c",
+        "*.h": "objective-cpp",
+        "*.plist": "properties",
+        "*.mobileprovision": "xml",
+        "set": "cpp"
+    }
+}
