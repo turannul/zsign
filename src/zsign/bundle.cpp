@@ -195,7 +195,8 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 		if (m_bRemoveEmbedded)
 		{
 			string provPath = strFolder + "/embedded.mobileprovision";
-			remove(provPath.data());
+			RemoveFile(provPath.c_str());
+			ZLog::PrintV("Deleted: %s", provPath.c_str());
 			continue;
 		}
 		string strFile = strFolder + "/" + strKey;
