@@ -1,7 +1,7 @@
 #include "../Headers/zsign.h"
 
 const struct option options[] = {
-	// k:m:c:df:o:p:b:n:r:ez:l:wqvh
+	// k:m:c:o:p:b:n:r:z:l:dfewqvh
     {"pkey", required_argument, NULL, 'k'},
     {"prov", required_argument, NULL, 'm'},
     {"cert", required_argument, NULL, 'c'},
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     int opt = 0;
     int argslot = -1;
 	opterr = 0;
-    while (-1 != (opt = getopt_long(argc, argv, "k:m:c:df:o:p:b:n:r:ez:l:wqvh", options, &argslot))) {
+    while (-1 != (opt = getopt_long(argc, argv, "k:m:c:o:p:b:n:r:z:l:dfewqvh", options, &argslot))) {
         switch (opt) {
         case 'd':
             ZLog::SetLogLever(ZLog::E_DEBUG);
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
         StringFormat(strFolder, "/var/tmp/zsign_folder_%llu", timer.Reset());
         ZLog::PrintV("Extracting: %s (%s) -> %s\n", strPath.c_str(), GetFileSizeString(strPath.c_str()).c_str(), strFolder.c_str());
         RemoveFolder(strFolder.c_str());
-        if (!SystemExec("7z x \"%s\" -y -o\"%s\"", strPath.c_str(), strFolder.c_str())) {
+        if (!SystemExec("7z x \"%s\" -y -o\"%s\" -bb0", strPath.c_str(), strFolder.c_str())) {
             RemoveFolder(strFolder.c_str());
             ZLog::ErrorV("Extract Failed!\n");
             return -1;
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
             if (0 == chdir(strBaseFolder.c_str())) {
                 uZipLevel = uZipLevel > 9 ? 9 : uZipLevel;
                 RemoveFile(strOutputFile.c_str());
-                SystemExec("7z a -tzip -mx=%u -y \"%s\" Payload", uZipLevel, strOutputFile.c_str());
+                SystemExec("7z a -tzip -mx=%u -y \"%s\" Payload -bb0", uZipLevel, strOutputFile.c_str());
                 chdir(szOldFolder);
                 if (!IsFileExists(strOutputFile.c_str())) {
                     ZLog::Error("Compress Failed!\n");
