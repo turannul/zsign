@@ -662,7 +662,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 	ZLog::PrintV("Required OS Version: %s\n", jvRoot["ros"].asCString());
 	ZLog::PrintV("Certificate Name: %s\n", m_pSignAsset->m_strSubjectCN.c_str());
 	if (m_bRemoveEmbedded) { 
-		ZLog::PrintV("embedded.mobileprovision deleted.\n");
+		ZLog::PrintV("Info: Deleted embedded.mobileprovision\n");
 	} 
 
 	if (SignNode(jvRoot))
