@@ -14,7 +14,7 @@ message("iPA found: ${ipa}")
 add_test(Exec_cmd
     ${zsign_exec} -V)
 
-add_test(exec#2 
+add_test(Exec_cmd_longArg
     ${zsign_exec} --version)
 
 add_test(Encrypted_Cert
@@ -24,7 +24,7 @@ add_test(Encrypted_Cert
             ${ipa}
             -o /tmp/Encrypted_Test.ipa)
 
-add_test(Encrypted_Cert#2
+add_test(Encrypted_Cert_longArg
     ${zsign_exec} --pkey ${encrypted_p12}
             --prov ${provision_profile}
             --password 1234 
@@ -37,7 +37,7 @@ add_test(Unencrypted_Cert
             ${ipa} 
             -o /tmp/Unencrypted_Test.ipa)
 
-add_test(Unencrypted_Cert#2
+add_test(Unencrypted_Cert_longArg
     ${zsign_exec} --pkey ${unencrypted_p12}
             --prov ${provision_profile}
             ${ipa} 
@@ -50,7 +50,7 @@ add_test(Bundle_ID
             -o /tmp/Unencrypted_Test.ipa
             -b xyz.turannul.test)
 
-add_test(Bundle_ID#2
+add_test(Bundle_ID_longArg
     ${zsign_exec} --pkey ${unencrypted_p12}
             --prov ${provision_profile}
             ${ipa} 
@@ -64,7 +64,7 @@ add_test(Bundle_Name
             -o /tmp/Unencrypted_Test.ipa
             -n TestApp)
 
-add_test(Bundle_Name#2
+add_test(Bundle_Name_longArg
     ${zsign_exec} --pkey ${unencrypted_p12}
             --prov ${provision_profile}
             ${ipa} 
@@ -78,7 +78,7 @@ add_test(Bundle_Version
             -o /tmp/Unencrypted_Test.ipa
             -v 1.0.0)
 
-add_test(Bundle_Version#2
+add_test(Bundle_Version_longArg
     ${zsign_exec} --pkey ${unencrypted_p12}
             --prov ${provision_profile}
             ${ipa} 
@@ -92,7 +92,7 @@ add_test(Remove_Embedded
             -o /tmp/Unencrypted_Test_RemoveEmbedded.ipa
             -e)
 
-add_test(Remove_Embedded#2
+add_test(Remove_Embedded_longArg
     ${zsign_exec} --pkey ${unencrypted_p12}
             --prov ${provision_profile}
             ${ipa} 
