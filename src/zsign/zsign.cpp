@@ -1,45 +1,43 @@
 #include "../Headers/zsign.h"
 
 const struct option options[] = {
-    {"pkey", required_argument, NULL, 'k'},
+    {"pkey", required_argument, NULL, 'p'},
     {"prov", required_argument, NULL, 'm'},
-    {"cert", required_argument, NULL, 'c'},
-    {"debug", no_argument, NULL, 'd'},
-    {"force", no_argument, NULL, 'f'},
     {"output", required_argument, NULL, 'o'},
-    {"password", required_argument, NULL, 'p'},
+    {"password", required_argument, NULL, 'P'},
     {"bundle_id", required_argument, NULL, 'b'},
     {"bundle_name", required_argument, NULL, 'n'},
-    {"bundle_version", required_argument, NULL, 'r'},
-    {"remove_embedded", no_argument, NULL, 'e'},
+    {"bundle_version", required_argument, NULL, 'v'},
     {"zip_level", required_argument, NULL, 'z'},
     {"dylib", required_argument, NULL, 'l'},
+    {"remove_embedded", no_argument, NULL, 'e'},
+    {"debug", no_argument, NULL, 'd'},
+    {"force", no_argument, NULL, 'f'},
     {"weak", no_argument, NULL, 'w'},
     {"quiet", no_argument, NULL, 'q'},
-    {"version", no_argument, NULL, 'v'},
+    {"version", no_argument, NULL, 'V'},
     {"help", no_argument, NULL, 'h'},
 };
 
 int usage()
 {
-    ZLog::Print("Usage: zsign [-qfde] [-k privkey.p12 & privkey.pem] [-m mobile.provision] [-o signed.ipa] unsigned.ipa\n");
+    ZLog::Print("Usage: zsign [-bnvledfwqvh] [-p privkey.p12/pem] [-m mobile.provision] [-o signed.ipa] unsigned.ipa [-P p12_pass] [-z compression_level] \n");
     ZLog::Print("Options:\n");
-    ZLog::Print("-k, --pkey\t\tPath to private key or p12 file. (PEM or DER format)\n");
+    ZLog::Print("-p, --pkey\t\tPath to private key or p12 file. (PEM or DER format)\n");
     ZLog::Print("-m, --prov\t\tPath to provisioning profile.\n");
-    ZLog::Print("-c, --cert\t\tPath to certificate file. (PEM or DER format)\n");
-    ZLog::Print("-d, --debug\t\tGenerate debug output files. (.zsign_debug folder)\n");
-    ZLog::Print("-f, --force\t\tForce sign without cache when signing folder.\n");
     ZLog::Print("-o, --output\t\tPath to output ipa file.\n");
-    ZLog::Print("-p, --password\t\tPassword for private key or p12 file.\n");
+    ZLog::Print("-P, --password\t\tPassword for private key or p12 file.\n");
     ZLog::Print("-b, --bundle_id\t\tNew bundle id to change.\n");
     ZLog::Print("-n, --bundle_name\tNew bundle name to change.\n");
-    ZLog::Print("-r, --bundle_version\tNew bundle version to change.\n");
-    ZLog::Print("-e, --remove_embedded\tRemove emmbedded.mobileprovision.\n");
+    ZLog::Print("-v, --bundle_version\tNew bundle version to change.\n");
     ZLog::Print("-z, --zip_level\t\tCompressed level when output the ipa file. (0-9)\n");
     ZLog::Print("-l, --dylib\t\tPath to inject dylib file.\n");
+    ZLog::Print("-e, --remove_embedded\tRemove emmbedded.mobileprovision.\n");
+    ZLog::Print("-d, --debug\t\tGenerate debug output files. (.zsign_debug folder)\n");
+    ZLog::Print("-f, --force\t\tForce sign without cache when signing folder.\n");
     ZLog::Print("-w, --weak\t\tInject dylib as LC_LOAD_WEAK_DYLIB.\n");
     ZLog::Print("-q, --quiet\t\tQuiet operation.\n");
-    ZLog::Print("-v, --version\t\tShow version.\n");
+    ZLog::Print("-V, --version\t\tShow version.\n");
     ZLog::Print("-h, --help\t\tShow this message.\n");
     ZLog::Print("Modified for FavourSign by Turann_");
     return 0;
@@ -59,7 +57,6 @@ int main(int argc, char *argv[])
     string strPassword;
     string strBundleId;
     string strBundleVersion;
-    string intRequiredOSVersion;
     string strDyLibFile;
     string strOutputFile;
     string strDisplayName;
@@ -67,46 +64,43 @@ int main(int argc, char *argv[])
     int opt = 0;
     int argslot = -1;
     opterr = 0;
-    while (-1 != (opt = getopt_long(argc, argv, "k:m:c:o:p:b:n:r:z:l:dfewqvh", options, &argslot))) {
+    while (-1 != (opt = getopt_long(argc, argv, "p:m:o:P:b:n:v:z:l:edfwqVh", options, &argslot))) {
         switch (opt) {
-        case 'd':
-            ZLog::SetLogLever(ZLog::E_DEBUG);
-            break;
-        case 'f':
-            bForce = true;
-            break;
-        case 'c':
-            strCertFile = optarg;
-            break;
-        case 'k':
+        case 'p':
             strPKeyFile = optarg;
             break;
         case 'm':
             strProvFile = optarg;
             break;
-        case 'p':
+        case 'o':
+            strOutputFile = GetCanonicalizePath(optarg);
+            break;
+        case 'P':
             strPassword = optarg;
             break;
         case 'b':
             strBundleId = optarg;
             break;
-        case 'r':
-            strBundleVersion = optarg;
-            break;
         case 'n':
             strDisplayName = optarg;
             break;
-        case 'e':
-            bRemoveEmbedded = true;
+        case 'v':
+            strBundleVersion = optarg;
+            break;
+        case 'z':
+            uZipLevel = atoi(optarg);
             break;
         case 'l':
             strDyLibFile = optarg;
             break;
-        case 'o':
-            strOutputFile = GetCanonicalizePath(optarg);
+        case 'e':
+            bRemoveEmbedded = true;
             break;
-        case 'z':
-            uZipLevel = atoi(optarg);
+        case 'd':
+            ZLog::SetLogLever(ZLog::E_DEBUG);
+            break;
+        case 'f':
+            bForce = true;
             break;
         case 'w':
             bWeakInject = true;
@@ -114,13 +108,12 @@ int main(int argc, char *argv[])
         case 'q':
             ZLog::SetLogLever(ZLog::E_NONE);
             break;
-        case 'v': {
+        case 'V': {
             printf("version: 0.5.5\n");
             return 0;
         }
         case 'h':
             return usage();
-            break;
         default:
             printf("Unknown option.");
             return 1;
