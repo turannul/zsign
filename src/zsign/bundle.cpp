@@ -196,7 +196,6 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 		{
 			string provPath = strFolder + "/embedded.mobileprovision";
 			RemoveFile(provPath.c_str());
-			ZLog::PrintV("Deleted: %s", provPath.c_str());
 			continue;
 		}
 		string strFile = strFolder + "/" + strKey;
@@ -662,7 +661,9 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 	ZLog::PrintV("Bundle Version: %s\n", jvRoot["bver"].asCString());
 	ZLog::PrintV("Required OS Version: %s\n", jvRoot["ros"].asCString());
 	ZLog::PrintV("Certificate Name: %s\n", m_pSignAsset->m_strSubjectCN.c_str());
-	ZLog::PrintV("Cache Enabled: %s\n", m_bForceSign ? "NO" : "YES");
+	if (m_bRemoveEmbedded) { 
+		ZLog::PrintV("embedded.mobileprovision deleted.\n");
+	} 
 
 	if (SignNode(jvRoot))
 	{
