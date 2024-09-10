@@ -1,6 +1,7 @@
 #include "../Headers/zsign.h"
 
 const struct option options[] = {
+	// k:m:c:df:o:p:b:n:r:ez:l:wqvh
     {"pkey", required_argument, NULL, 'k'},
     {"prov", required_argument, NULL, 'm'},
     {"cert", required_argument, NULL, 'c'},
@@ -11,7 +12,7 @@ const struct option options[] = {
     {"bundle_id", required_argument, NULL, 'b'},
     {"bundle_name", required_argument, NULL, 'n'},
     {"bundle_version", required_argument, NULL, 'r'},
-    {"remove_embedded", no_argument, NULL, 'R'},
+    {"remove_embedded", no_argument, NULL, 'e'},
     {"zip_level", required_argument, NULL, 'z'},
     {"dylib", required_argument, NULL, 'l'},
     {"weak", no_argument, NULL, 'w'},
@@ -22,7 +23,7 @@ const struct option options[] = {
 
 int usage()
 {
-    ZLog::Print("Usage: zsign [-qfdR] [-k privkey.p12 & privkey.pem] [-m mobile.provision] [-o signed.ipa] unsigned.ipa\n");
+    ZLog::Print("Usage: zsign [-qfde] [-k privkey.p12 & privkey.pem] [-m mobile.provision] [-o signed.ipa] unsigned.ipa\n");
     ZLog::Print("Options:\n");
     ZLog::Print("-k, --pkey\t\tPath to private key or p12 file. (PEM or DER format)\n");
     ZLog::Print("-m, --prov\t\tPath to provisioning profile.\n");
@@ -34,7 +35,7 @@ int usage()
     ZLog::Print("-b, --bundle_id\t\tNew bundle id to change.\n");
     ZLog::Print("-n, --bundle_name\tNew bundle name to change.\n");
     ZLog::Print("-r, --bundle_version\tNew bundle version to change.\n");
-    ZLog::Print("-R, --remove_embedded\tRemove emmbedded.mobileprovision.\n");
+    ZLog::Print("-e, --remove_embedded\tRemove emmbedded.mobileprovision.\n");
     ZLog::Print("-z, --zip_level\t\tCompressed level when output the ipa file. (0-9)\n");
     ZLog::Print("-l, --dylib\t\tPath to inject dylib file.\n");
     ZLog::Print("-w, --weak\t\tInject dylib as LC_LOAD_WEAK_DYLIB.\n");
@@ -66,7 +67,8 @@ int main(int argc, char *argv[])
 
     int opt = 0;
     int argslot = -1;
-    while (-1 != (opt = getopt_long(argc, argv, "dfvhc:k:m:p:b:n:r:Ro:z:l:wq", options, &argslot))) {
+	opterr = 0;
+    while (-1 != (opt = getopt_long(argc, argv, "k:m:c:df:o:p:b:n:r:ez:l:wqvh", options, &argslot))) {
         switch (opt) {
         case 'd':
             ZLog::SetLogLever(ZLog::E_DEBUG);
@@ -95,7 +97,7 @@ int main(int argc, char *argv[])
         case 'n':
             strDisplayName = optarg;
             break;
-        case 'R':
+        case 'e':
             bRemoveEmbedded = true;
             break;
         case 'l':
@@ -114,17 +116,16 @@ int main(int argc, char *argv[])
             ZLog::SetLogLever(ZLog::E_NONE);
             break;
         case 'v': {
-            printf("version: 0.5.3\n");
+            printf("version: 0.5.5\n");
             return 0;
         }
-		case '?':
         case 'h':
             return usage();
 			break;
-        default:
-            printf("Unknown option: %c\n", opt);
-            return usage();
-        }
+		default:
+			printf("Unknown option.");
+			return 1;
+		}
         ZLog::DebugV("Option:\t-%c, %s\n", opt, optarg);
     }
 
