@@ -1,5 +1,29 @@
 #include "../Headers/zsign.h"
 
+std::string getCacheDirectory() {
+    const char* homeDir = getenv("HOME");
+    if (homeDir == nullptr) {
+        std::cerr << "HOME environment variable is not set." << std::endl;
+        return "";
+    }
+
+    std::string cacheDir = std::string(homeDir) + "/.zsign";
+
+    struct stat st;
+    if (stat(cacheDir.c_str(), &st) != 0) {
+        // Directory does not exist, create it
+        if (mkdir(cacheDir.c_str(), 0700) != 0) {
+            std::cerr << "Error creating cache directory: " << cacheDir << std::endl;
+            return "";
+        }
+    } else if (!S_ISDIR(st.st_mode)) {
+        std::cerr << "Path exists but is not a directory: " << cacheDir << std::endl;
+        return "";
+    }
+
+    return cacheDir;
+}
+
 const struct option options[] = {
     {"pkey", required_argument, NULL, 'p'},
     {"prov", required_argument, NULL, 'm'},
@@ -167,7 +191,7 @@ int main(int argc, char *argv[])
     if (bZipFile) {
         bForce = true;
         bEnableCache = false;
-        StringFormat(strFolder, "/var/tmp/zsign_folder_%llu", timer.Reset());
+        StringFormat(strFolder, "%s/zsign_folder_%llu", getCacheDirectory().c_str(), timer.Reset());
         ZLog::PrintV("Extracting: %s (%s) -> %s\n", strPath.c_str(), GetFileSizeString(strPath.c_str()).c_str(), strFolder.c_str());
         RemoveFolder(strFolder.c_str());
         if (!SystemExec("7z x \"%s\" -y -o\"%s\" -bb0", strPath.c_str(), strFolder.c_str())) {
@@ -183,7 +207,7 @@ int main(int argc, char *argv[])
     bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bEnableCache, bRemoveEmbedded);
     timer.PrintResult(bRet, "Signed %s!", bRet ? "OK" : "Failed");
 
-    if (strOutputFile.empty()) { StringFormat(strOutputFile, "/var/tmp/zsign_temp_%llu.ipa", GetMicroSecond()); }
+    if (strOutputFile.empty()) { StringFormat(strOutputFile, "%s/zsign_temp_%llu.ipa", getCacheDirectory().c_str(), GetMicroSecond()); }
 
     if (!strOutputFile.empty()) {
         timer.Reset();
@@ -211,8 +235,10 @@ int main(int argc, char *argv[])
         timer.PrintResult(true, "Compress OK! (%s)", GetFileSizeString(strOutputFile.c_str()).c_str());
     }
 
-    if (0 == strOutputFile.find("/var/tmp/zsign_tmp_")) { RemoveFile(strOutputFile.c_str()); }
-    if (0 == strFolder.find("/var/tmp/zsign_folder_")) { RemoveFolder(strFolder.c_str()); }
+    string tempPattern = getCacheDirectory() + "/zsign_temp_";
+    string folderPattern = getCacheDirectory() + "/zsign_folder_";
+    if (0 == strOutputFile.find(tempPattern)) { RemoveFile(strOutputFile.c_str()); }
+    if (0 == strFolder.find(folderPattern)) { RemoveFolder(strFolder.c_str()); }
 
     gtimer.Print("Success!");
     return bRet ? 0 : -1;
