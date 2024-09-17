@@ -5,6 +5,8 @@
         "*.h": "objective-cpp",
         "*.plist": "properties",
         "*.mobileprovision": "xml",
-        "set": "cpp"
+        "set": "cpp",
+        "stdexcept": "cpp",
+        "string": "cpp"
     }
 }
