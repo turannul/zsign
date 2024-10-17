@@ -1,38 +1,37 @@
 Maybe it is the most quickly codesign alternative for iOS12+, cross-platform  **Linux**, **macOS** & **Windows** , more features.
 If this tool can help you, please don't forget to <font color=#FF0000 size=5>🌟**star**🌟</font> [Me](https://github.com/zhlynn).
-## Compile on macOS & Linux (Debian {apt} based):
+## Compile on macOS & Linux (apt based Distros like Debian,Ubuntu etc)
 
 ```bash
-./install.sh
+./INSTALL.sh
 ```
-``` Windows is not supported i don't care, install linux. ```
+``` For Windows use WSL. ```
 <br>
   
 ## zsign usage:
 I have already tested on macOS and Linux, but you also need **unzip** and **zip** command installed.
 
 ```bash
-Usage: zsign [-options] [-k privkey.pem] [-m dev.prov] [-o output.ipa] file|folder
+Usage: zsign [-bnvledfwqvh] [-p privkey.p12/pem] [-m mobile.provision] [-o signed.ipa] unsigned.ipa [-P p12_pass] [-z compression_level]
+Options:
 
-options:
--k, --pkey           Path to private key or p12 file. (PEM or DER format)
--m, --prov           Path to mobile provisioning profile.
--c, --cert           Path to certificate file. (PEM or DER format)
--d, --debug          Generate debug output files. (.zsign_debug folder)
--f, --force          Force sign without cache when signing folder.
--o, --output         Path to output ipa file.
--p, --password       Password for private key or p12 file.
--b, --bundle_id      New bundle id to change.
--n, --bundle_name    New bundle name to change.
--r, --bundle_version New bundle version to change.
--e, --entitlements   New entitlements to change.
--z, --zip_level      Compressed level when output the ipa file. (0-9)
--l, --dylib          Path to inject dylib file.
--w, --weak           Inject dylib as LC_LOAD_WEAK_DYLIB.
--i, --install        Install ipa file using ideviceinstaller command for test.
--q, --quiet          Quiet operation.
--v, --version        Show version.
--h, --help           Show help.
+-p, --pkey		Path to private key or p12 file. (PEM or DER format)
+-m, --prov		Path to provisioning profile.
+-o, --output		Path to output ipa file.
+-P, --password		Password for private key or p12 file.
+-b, --bundle_id		New bundle id to change.
+-n, --bundle_name	New bundle name to change.
+-v, --bundle_version	New bundle version to change.
+-z, --zip_level		Compressed level when output the ipa file. (0-9)
+-l, --dylib		Path to inject dylib file.
+-E, --entitlements	Path to entitlements file.
+-e, --remove_embedded	Remove emmbedded.mobileprovision.
+-d, --debug		Generate debug output files. (.zsign_debug folder)
+-f, --force		Force sign without cache when signing folder.
+-w, --weak		Inject dylib as LC_LOAD_WEAK_DYLIB.
+-q, --quiet		Quiet operation.
+-V, --version		Show version.
+-h, --help		Show this message.
 ```
 
 1. Show mach-o and codesignature segment info.
