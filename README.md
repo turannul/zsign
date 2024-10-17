@@ -1,11 +1,11 @@
 Maybe it is the most quickly codesign alternative for iOS12+, cross-platform  **Linux**, **macOS** & **Windows** , more features.
-If this tool can help you, please don't forget to <font color=#FF0000 size=5>🌟**star**🌟</font> [Me](https://github.com/zhlynn).
-## Compile on macOS & Linux
+If this tool can help you, please don't forget to <font color=#FF0000 size=5>🌟**star**🌟</font> [Zhylnn (Original creator of zsign)](https://github.com/zhlynn/zsign) & [Me](https://github.com/turannul/zsign)
+## Compiling on macOS & Linux
 
 ```bash
 ./INSTALL.sh
 ```
-``` For Windows use WSL. ```
+## Note: Windows is unsupoorted unless used in WSL.
 <br>
   
 ## zsign usage:
