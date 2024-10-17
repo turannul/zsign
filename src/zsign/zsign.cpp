@@ -82,7 +82,8 @@ int main(int argc, char *argv[])
     string strProvFile;
     string strPassword;
     string strBundleId;
-    string strBundleVersion;
+    string strBundleVersion_Short;
+    string strBundleVersion_Long;
     string strDyLibFile;
     string strOutputFile;
     string strDisplayName;
@@ -112,7 +113,8 @@ int main(int argc, char *argv[])
             strDisplayName = optarg;
             break;
         case 'v':
-            strBundleVersion = optarg;
+            strBundleVersion_Short = optarg;
+            strBundleVersion_Long = optarg;
             break;
         case 'z':
             uZipLevel = atoi(optarg);
@@ -204,7 +206,7 @@ int main(int argc, char *argv[])
 
     timer.Reset();
     ZAppBundle bundle;
-    bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion, strDisplayName, strDyLibFile, bForce, bWeakInject, bEnableCache, bRemoveEmbedded);
+    bool bRet = bundle.SignFolder(&zSignAsset, strFolder, strBundleId, strBundleVersion_Short, strBundleVersion_Long, strDisplayName, strDyLibFile, bForce, bWeakInject, bEnableCache, bRemoveEmbedded);
     timer.PrintResult(bRet, "Signed %s!", bRet ? "OK" : "Failed");
 
     if (strOutputFile.empty()) { StringFormat(strOutputFile, "%s/zsign_temp_%llu.ipa", getCacheDirectory().c_str(), GetMicroSecond()); }

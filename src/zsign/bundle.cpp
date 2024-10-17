@@ -68,7 +68,8 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 	jvInfo.readPList(strInfoPlistData);
 	string strBundleId = jvInfo["CFBundleIdentifier"];
 	string strBundleExe = jvInfo["CFBundleExecutable"];
-	string strBundleVersion = jvInfo["CFBundleShortVersionString"];
+	string strBundleVersion_Short = jvInfo["CFBundleShortVersionString"];
+	string strBundleVersion_Long = jvInfo["CFBundleVersion"];
 	string intRequiredOSVersion = jvInfo["MinimumOSVersion"];
 	if (strBundleId.empty() || strBundleExe.empty())
 	{
@@ -80,7 +81,8 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 	SHASumBase64(strInfoPlistData, strInfoPlistSHA1Base64, strInfoPlistSHA256Base64);
 
 	jvNode["bid"] = strBundleId;
-	jvNode["bver"] = strBundleVersion;
+	jvNode["bverShort"] = strBundleVersion_Short;
+	jvNode["bverLong"] = strBundleVersion_Long;
 	jvNode["exec"] = strBundleExe;
 	jvNode["ros"] = intRequiredOSVersion;
 	jvNode["sha1"] = strInfoPlistSHA1Base64;
@@ -478,7 +480,8 @@ void ZAppBundle::GetPlugIns(const string &strFolder, vector<string> &arrPlugIns)
 bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 							const string &strFolder,
 							const string &strBundleID,
-							const string &strBundleVersion,
+							const string &strBundleVersion_Short,
+							const string &strBundleVersion_Long,
 							const string &strDisplayName,
 							const string &strDyLibFile,
 							bool bForce,
@@ -501,7 +504,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 		return false;
 	}
 
-	if (!strBundleID.empty() || !strDisplayName.empty() || !strBundleVersion.empty())
+	if (!strBundleID.empty() || !strDisplayName.empty() || !strBundleVersion_Short.empty())
 	{ // modify bundle id
 		JValue jvInfoPlist;
 		if (jvInfoPlist.readPListPath("%s/Info.plist", m_strAppFolder.c_str()))
@@ -573,11 +576,14 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 				ZLog::PrintV("BundleName: %s -> %s\n", strOldDisplayName.c_str(), strDisplayName.c_str());
 			}
 
-			if (!strBundleVersion.empty())
+			if (!strBundleVersion_Short.empty())
 			{
-				string strOldBundleVersion = jvInfoPlist["CFBundleShortVersionString"];
-				jvInfoPlist["CFBundleShortVersionString"] = strBundleVersion;
-				ZLog::PrintV("BundleVersion: %s -> %s\n", strOldBundleVersion.c_str(), strBundleVersion.c_str());
+				string strOldBundleVersion_Short = jvInfoPlist["CFBundleShortVersionString"];
+				string strOldBundleVersion_Long = jvInfoPlist["CFBundleVersion"];
+				jvInfoPlist["CFBundleShortVersionString"] = strBundleVersion_Short;
+				jvInfoPlist["CFBundleVersion"] = strBundleVersion_Long;
+				ZLog::PrintV("BundleVersion: %s -> %s\n", strOldBundleVersion_Short.c_str(), strBundleVersion_Short.c_str());
+				ZLog::PrintV("BundleVersion: %s -> %s\n", strOldBundleVersion_Long.c_str(), strBundleVersion_Long.c_str());
 			}
 			jvInfoPlist.writePListPath("%s/Info.plist", m_strAppFolder.c_str());
 		}
