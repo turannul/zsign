@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
             ZLog::SetLogLever(ZLog::E_NONE);
             break;
         case 'V': {
-            printf("version: 0.5.5\n");
+            printf("Version: 0.5.6-1\n");
             return 0;
         }
         case 'h':

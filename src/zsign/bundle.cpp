@@ -582,8 +582,8 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 				string strOldBundleVersion_Long = jvInfoPlist["CFBundleVersion"];
 				jvInfoPlist["CFBundleShortVersionString"] = strBundleVersion_Short;
 				jvInfoPlist["CFBundleVersion"] = strBundleVersion_Long;
-				ZLog::PrintV("BundleVersion: %s -> %s\n", strOldBundleVersion_Short.c_str(), strBundleVersion_Short.c_str());
-				ZLog::PrintV("BundleVersion: %s -> %s\n", strOldBundleVersion_Long.c_str(), strBundleVersion_Long.c_str());
+				ZLog::PrintV("BundleVersion Short: %s -> %s\n", strOldBundleVersion_Short.c_str(), strBundleVersion_Short.c_str());
+				ZLog::PrintV("BundleVersion Long: %s -> %s\n", strOldBundleVersion_Long.c_str(), strBundleVersion_Long.c_str());
 			}
 			jvInfoPlist.writePListPath("%s/Info.plist", m_strAppFolder.c_str());
 		}
@@ -664,7 +664,7 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 	ZLog::PrintV("Signing: %s\n", m_strAppFolder.c_str());
 	ZLog::PrintV("App Name: %s\n", jvRoot["name"].asCString());
 	ZLog::PrintV("Bundle ID: %s\n", jvRoot["bid"].asCString());
-	ZLog::PrintV("Bundle Version: %s\n", jvRoot["bver"].asCString());
+	ZLog::PrintV("Bundle Version: %s\n", jvRoot["bverShort"].asCString());
 	ZLog::PrintV("Required OS Version: %s\n", jvRoot["ros"].asCString());
 	ZLog::PrintV("Certificate Name: %s\n", m_pSignAsset->m_strSubjectCN.c_str());
 	if (m_bRemoveEmbedded) { 
