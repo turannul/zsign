@@ -3,12 +3,14 @@
 #include "../Headers/Certs/appleDevCA_Cert_G3.h"
 #include "../Headers/Certs/appleRoot_CA_Cert.h"
 
-class COpenSSLInit {
+class COpenSSLInit
+{
 public:
-    COpenSSLInit() {
+	COpenSSLInit()
+	{
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
-        OpenSSL_add_all_algorithms();
-        ERR_load_crypto_strings();
+		OpenSSL_add_all_algorithms();
+		ERR_load_crypto_strings();
 #endif
 	};
 };
