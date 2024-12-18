@@ -1,12 +1,12 @@
 #include "../Headers/bundle.h"
 
-
 ZAppBundle::ZAppBundle()
 {
 	m_pSignAsset = NULL;
 	m_bForceSign = false;
 	m_bWeakInject = false;
 	m_bRemoveEmbedded = false;
+	m_bRemoveWatch = false;
 }
 
 bool ZAppBundle::FindAppFolder(const string &strFolder, string &strAppFolder)
@@ -198,6 +198,12 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 		{
 			string provPath = strFolder + "/embedded.mobileprovision";
 			RemoveFile(provPath.c_str());
+			continue;
+		}
+		if (m_bRemoveWatch)
+		{
+			string watchAppPath = strFolder + "com.apple.WatchPlaceholder/";
+			RemoveFile(watchAppPath.c_str());
 			continue;
 		}
 		string strFile = strFolder + "/" + strKey;
@@ -487,12 +493,14 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 							bool bForce,
 							bool bWeakInject,
 							bool bEnableCache,
-							bool bRemoveEmbedded)
+							bool bRemoveEmbedded,
+							bool bRemoveWatch)
 {
 	m_bForceSign = bForce;
 	m_pSignAsset = pSignAsset;
 	m_bWeakInject = bWeakInject;
 	m_bRemoveEmbedded = bRemoveEmbedded;
+	m_bRemoveWatch = bRemoveWatch;
 	if (NULL == m_pSignAsset)
 	{
 		return false;
@@ -667,9 +675,15 @@ bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
 	ZLog::PrintV("Bundle Version: %s\n", jvRoot["bverShort"].asCString());
 	ZLog::PrintV("Required OS Version: %s\n", jvRoot["ros"].asCString());
 	ZLog::PrintV("Certificate Name: %s\n", m_pSignAsset->m_strSubjectCN.c_str());
-	if (m_bRemoveEmbedded) { 
+	if (m_bRemoveEmbedded)
+	{
 		ZLog::PrintV("Info: Deleted embedded.mobileprovision\n");
-	} 
+	}
+
+	if (m_bRemoveWatch)
+	{
+		ZLog::PrintV("Info: Removed Watch bundle\n");
+	}
 
 	if (SignNode(jvRoot))
 	{

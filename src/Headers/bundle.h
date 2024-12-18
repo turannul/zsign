@@ -13,7 +13,7 @@ public:
 	ZAppBundle();
 
 public:
-	bool SignFolder(ZSignAsset *pSignAsset, const string &strFolder, const string &strBundleID, const string &strBundleVersion_Short, const string &strBundleVersion_Long, const string &strDisplayName, const string &strDyLibFile, bool bForce, bool bWeakInject, bool bRemoveEmbedded, bool bEnableCache);
+	bool SignFolder(ZSignAsset *pSignAsset, const string &strFolder, const string &strBundleID, const string &strBundleVersion_Short, const string &strBundleVersion_Long, const string &strDisplayName, const string &strDyLibFile, bool bForce, bool bWeakInject, bool bRemoveEmbedded, bool bRemmoveWatch, bool bEnableCache);
 
 private:
 	bool SignNode(JValue &jvNode);
@@ -34,6 +34,7 @@ private:
 	bool m_bForceSign;
 	bool m_bWeakInject;
 	bool m_bRemoveEmbedded;
+	bool m_bRemoveWatch;
 	string m_strDyLibPath;
 	ZSignAsset *m_pSignAsset;
 
