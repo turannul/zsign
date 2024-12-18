@@ -378,7 +378,7 @@ bool ZArchO::BuildCodeSignature(ZSignAsset *pSignAsset, bool bForce, const strin
 	string strRequirementsSlotSHA1;
 	string strRequirementsSlotSHA256;
 	if (strRequirementsSlot.empty())
-	{ //empty
+	{ // empty
 		strRequirementsSlotSHA1.append(20, 0);
 		strRequirementsSlotSHA256.append(32, 0);
 	}
@@ -390,7 +390,7 @@ bool ZArchO::BuildCodeSignature(ZSignAsset *pSignAsset, bool bForce, const strin
 	string strEntitlementsSlotSHA1;
 	string strEntitlementsSlotSHA256;
 	if (strEntitlementsSlot.empty())
-	{ //empty
+	{ // empty
 		strEntitlementsSlotSHA1.append(20, 0);
 		strEntitlementsSlotSHA256.append(32, 0);
 	}
@@ -402,7 +402,7 @@ bool ZArchO::BuildCodeSignature(ZSignAsset *pSignAsset, bool bForce, const strin
 	string strDerEntitlementsSlotSHA1;
 	string strDerEntitlementsSlotSHA256;
 	if (strDerEntitlementsSlot.empty())
-	{ //empty
+	{ // empty
 		strDerEntitlementsSlotSHA1.append(20, 0);
 		strDerEntitlementsSlotSHA256.append(32, 0);
 	}
@@ -609,7 +609,7 @@ bool ZArchO::Sign(ZSignAsset *pSignAsset, bool bForce, const string &strBundleId
 	}
 
 	memcpy(m_pBase + m_uCodeLength, strCodeSignBlob.data(), strCodeSignBlob.size());
-	//memset(m_pBase + m_uCodeLength + strCodeSignBlob.size(), 0, nSpaceLength);
+	// memset(m_pBase + m_uCodeLength + strCodeSignBlob.size(), 0, nSpaceLength);
 	return true;
 }
 
@@ -617,7 +617,7 @@ uint32_t ZArchO::ReallocCodeSignSpace(const string &strNewFile)
 {
 	RemoveFile(strNewFile.c_str());
 
-	uint32_t uNewLength = m_uCodeLength + ByteAlign(((m_uCodeLength / 4096) + 1) * (20 + 32), 4096) + 16384; //16K May Be Enough
+	uint32_t uNewLength = m_uCodeLength + ByteAlign(((m_uCodeLength / 4096) + 1) * (20 + 32), 4096) + 16384; // 16K May Be Enough
 	if (NULL == m_pLinkEditSegment || uNewLength <= m_uLength)
 	{
 		return 0;
@@ -722,7 +722,7 @@ bool ZArchO::InjectDyLib(bool bWeakInject, const char *szDyLibPath, bool &bCreat
 		return false;
 	}
 
-	//add
+	// add
 	dylib_command *dlc = (dylib_command *)(m_pBase + m_uHeaderSize + BO(m_pHeader->sizeofcmds));
 	dlc->cmd = BO((uint32_t)(bWeakInject ? LC_LOAD_WEAK_DYLIB : LC_LOAD_DYLIB));
 	dlc->cmdsize = BO(uDyLibCommandSize);
@@ -746,42 +746,43 @@ bool ZArchO::InjectDyLib(bool bWeakInject, const char *szDyLibPath, bool &bCreat
 
 void ZArchO::uninstallDylibs(set<string> dylibNames)
 {
-    uint8_t *pLoadCommand = m_pBase + m_uHeaderSize;
-    uint32_t old_load_command_size = m_pHeader->sizeofcmds;
-    uint8_t *new_load_command_data = (uint8_t*)malloc(old_load_command_size);
-    memset(new_load_command_data,0,old_load_command_size);
-    uint32_t new_load_command_size = 0;
-    uint32_t clear_num = 0;
-    uint32_t clear_data_size = 0;
-    for (uint32_t i = 0; i < BO(m_pHeader->ncmds); i++)
-    {
-        load_command *plc = (load_command *)pLoadCommand;
-        uint32_t load_command_size = BO(plc->cmdsize);
-        if (LC_LOAD_DYLIB == BO(plc->cmd) || LC_LOAD_WEAK_DYLIB == BO(plc->cmd))
-        {
-            dylib_command *dlc = (dylib_command *)pLoadCommand;
-            const char *szDyLib = (const char *)(pLoadCommand + BO(dlc->dylib.name.offset));
-            string dylibName = szDyLib;
-            if(dylibNames.count(dylibName)>0){
-                ZLog::PrintV("\t\t\t%s\tclear\n", szDyLib);
-                clear_num++;
-                clear_data_size+=load_command_size;
-                pLoadCommand += BO(plc->cmdsize);
-                continue;
-            }
-            ZLog::PrintV("\t\t\t%s\n", szDyLib);
-        }
-        new_load_command_size+=load_command_size;
-        memcpy(new_load_command_data,pLoadCommand,load_command_size);
-        new_load_command_data += load_command_size;
-        pLoadCommand += BO(plc->cmdsize);
-    }
-    pLoadCommand -= m_pHeader->sizeofcmds;
+	uint8_t *pLoadCommand = m_pBase + m_uHeaderSize;
+	uint32_t old_load_command_size = m_pHeader->sizeofcmds;
+	uint8_t *new_load_command_data = (uint8_t *)malloc(old_load_command_size);
+	memset(new_load_command_data, 0, old_load_command_size);
+	uint32_t new_load_command_size = 0;
+	uint32_t clear_num = 0;
+	uint32_t clear_data_size = 0;
+	for (uint32_t i = 0; i < BO(m_pHeader->ncmds); i++)
+	{
+		load_command *plc = (load_command *)pLoadCommand;
+		uint32_t load_command_size = BO(plc->cmdsize);
+		if (LC_LOAD_DYLIB == BO(plc->cmd) || LC_LOAD_WEAK_DYLIB == BO(plc->cmd))
+		{
+			dylib_command *dlc = (dylib_command *)pLoadCommand;
+			const char *szDyLib = (const char *)(pLoadCommand + BO(dlc->dylib.name.offset));
+			string dylibName = szDyLib;
+			if (dylibNames.count(dylibName) > 0)
+			{
+				ZLog::PrintV("\t\t\t%s\tclear\n", szDyLib);
+				clear_num++;
+				clear_data_size += load_command_size;
+				pLoadCommand += BO(plc->cmdsize);
+				continue;
+			}
+			ZLog::PrintV("\t\t\t%s\n", szDyLib);
+		}
+		new_load_command_size += load_command_size;
+		memcpy(new_load_command_data, pLoadCommand, load_command_size);
+		new_load_command_data += load_command_size;
+		pLoadCommand += BO(plc->cmdsize);
+	}
+	pLoadCommand -= m_pHeader->sizeofcmds;
 
-    m_pHeader->ncmds -= clear_num;
-    m_pHeader->sizeofcmds -= clear_data_size;
-    new_load_command_data -=new_load_command_size;
-    memset(pLoadCommand,0,old_load_command_size);
-    memcpy(pLoadCommand,new_load_command_data,new_load_command_size);
-    free(new_load_command_data);
+	m_pHeader->ncmds -= clear_num;
+	m_pHeader->sizeofcmds -= clear_data_size;
+	new_load_command_data -= new_load_command_size;
+	memset(pLoadCommand, 0, old_load_command_size);
+	memcpy(pLoadCommand, new_load_command_data, new_load_command_size);
+	free(new_load_command_data);
 }
