@@ -726,8 +726,9 @@ bool ZLog::ErrorV(const char *szFormatArgs, ...)
 }
 
 bool ZLog::Success(const char *szLog)
-{	write(STDOUT_FILENO, szLog, strlen(szLog));
-return true;
+{
+	write(STDOUT_FILENO, szLog, strlen(szLog));
+	return true;
 }
 
 bool ZLog::SuccessV(const char *szFormatArgs, ...)
