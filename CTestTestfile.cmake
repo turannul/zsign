@@ -98,3 +98,17 @@ add_test(Remove_Embedded_longArg
             ${ipa} 
             --output /tmp/Unencrypted_Test_RemoveEmbedded.ipa
             --remove_embedded)
+
+add_test(Remove_WatchBundle
+    ${zsign_exec} -p ${unencrypted_p12}
+            -m ${provision_profile}
+            ${ipa} 
+            -o /tmp/Unencrypted_Test_RemoveWatch.ipa
+            -r)
+
+add_test(Remove_WatchBundle_longArg
+    ${zsign_exec} --pkey ${unencrypted_p12}
+            --prov ${provision_profile}
+            ${ipa} 
+            --output /tmp/Unencrypted_Test_RemoveWatch.ipa
+            --remove_watch)
