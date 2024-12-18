@@ -159,7 +159,7 @@ bool SlotBuildRequirements(const string &strBundleID, const string &strSubjectCN
 {
 	strOutput.clear();
 	if (strBundleID.empty() || strSubjectCN.empty())
-	{ //ldid
+	{ // ldid
 		strOutput = "\xfa\xde\x0c\x01\x00\x00\x00\x0c\x00\x00\x00\x00";
 		return true;
 	}
@@ -177,7 +177,7 @@ bool SlotBuildRequirements(const string &strBundleID, const string &strSubjectCN
 	uint32_t uLength2 = 0;
 	uint8_t pack2[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x02};
 	uint32_t uBundldIDLength = (uint32_t)strBundleID.size();
-	//string strPaddedBundleID
+	// string strPaddedBundleID
 	uint8_t pack3[] = {
 		0x00,
 		0x00,
@@ -221,7 +221,7 @@ bool SlotBuildRequirements(const string &strBundleID, const string &strSubjectCN
 		0x01,
 	};
 	uint32_t uSubjectCNLength = (uint32_t)strSubjectCN.size();
-	//string strPaddedSubjectID
+	// string strPaddedSubjectID
 	uint8_t pack4[] = {
 		0x00,
 		0x00,
@@ -578,7 +578,7 @@ bool SlotBuildCodeDirectory(bool bAlternate,
 	uint32_t uSlotLength = uHeaderLength + uBundleIDLength + uSpecialSlotsLength + uCodeSlotsLength;
 	if (uVersion >= 0x20100)
 	{
-		//todo
+		// todo
 	}
 	if (uVersion >= 0x20200)
 	{
@@ -593,7 +593,7 @@ bool SlotBuildCodeDirectory(bool bAlternate,
 	uint32_t uHashOffset = uHeaderLength + uBundleIDLength + uSpecialSlotsLength;
 	if (uVersion >= 0x20100)
 	{
-		//todo
+		// todo
 	}
 	if (uVersion >= 0x20200)
 	{
@@ -606,7 +606,7 @@ bool SlotBuildCodeDirectory(bool bAlternate,
 	strOutput.append(strBundleId.data(), strBundleId.size() + 1);
 	if (uVersion >= 0x20100)
 	{
-		//todo
+		// todo
 	}
 	if (uVersion >= 0x20200)
 	{
@@ -619,7 +619,7 @@ bool SlotBuildCodeDirectory(bool bAlternate,
 	}
 
 	if (NULL != pCodeSlotsData && (uCodeSlotsDataLength == uCodeSlots * cdHeader.hashSize))
-	{ //use exists
+	{ // use exists
 		strOutput.append((const char *)pCodeSlotsData, uCodeSlotsDataLength);
 	}
 	else
@@ -651,7 +651,7 @@ bool SlotParseCMSSignature(uint8_t *pSlotBase, CS_BlobIndex *pbi)
 
 	JValue jvInfo;
 	GetCMSInfo(pSlotBase + 8, uSlotLength - 8, jvInfo);
-	//ZLog::PrintV("%s\n", jvInfo.styleWrite().c_str());
+	// ZLog::PrintV("%s\n", jvInfo.styleWrite().c_str());
 
 	ZLog::Print("\tCertificates: \n");
 	for (size_t i = 0; i < jvInfo["certs"].size(); i++)
@@ -721,8 +721,8 @@ bool SlotBuildCMSSignature(ZSignAsset *pSignAsset,
 	string strAltnateCodeDirectorySlot256;
 	SHASum(E_SHASUM_TYPE_1, strCodeDirectorySlot, strCodeDirectorySlotSHA1);
 	SHASum(E_SHASUM_TYPE_256, strAltnateCodeDirectorySlot, strAltnateCodeDirectorySlot256);
-	
-    size_t cdHashSize = strCodeDirectorySlotSHA1.size();
+
+	size_t cdHashSize = strCodeDirectorySlotSHA1.size();
 	jvHashes["cdhashes"][0].assignData(strCodeDirectorySlotSHA1.data(), cdHashSize);
 	jvHashes["cdhashes"][1].assignData(strAltnateCodeDirectorySlot256.data(), cdHashSize);
 	jvHashes.writePList(strCDHashesPlist);
