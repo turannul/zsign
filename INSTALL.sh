@@ -48,7 +48,7 @@ install_zsign() {
             if sudo mv Test/zsign /usr/local/bin/zsign; then
                 print_success "zsign has been successfully installed to $(which zsign)"
             else
-                print_error "Failed to install zsign to /usr/local/bin/ directory. You may need root?\nzsign will be moved to build directory instead."
+                print_error "Failed to install zsign to /usr/local/bin/ directory.\nzsign will be moved to build directory instead."
                 mv Test/zsign build/zsign
                 print_warning "zsign has been moved to the build directory."
             fi
@@ -156,7 +156,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
         exit 1
     fi
 
-    print_info "Checking macOS dependencies..."
     chk_brew_pkg p7zip
     chk_brew_pkg openssl@3
     chk_brew_pkg cmake
