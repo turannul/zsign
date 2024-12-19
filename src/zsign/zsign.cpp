@@ -43,7 +43,6 @@ int usage()
     ZLog::Print("-q, --quiet\t\tQuiet operation.\n");
     ZLog::Print("-V, --version\t\tShow version.\n");
     ZLog::Print("-h, --help\t\tShow this message.\n");
-    ZLog::Print("Modified for FavourSign by Turann_");
     return 0;
 }
 
