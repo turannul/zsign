@@ -483,18 +483,7 @@ void ZAppBundle::GetPlugIns(const string &strFolder, vector<string> &arrPlugIns)
 	}
 }
 
-bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset,
-							const string &strFolder,
-							const string &strBundleID,
-							const string &strBundleVersion_Short,
-							const string &strBundleVersion_Long,
-							const string &strDisplayName,
-							const string &strDyLibFile,
-							bool bForce,
-							bool bWeakInject,
-							bool bEnableCache,
-							bool bRemoveEmbedded,
-							bool bRemoveWatch)
+bool ZAppBundle::SignFolder(ZSignAsset *pSignAsset, const string &strFolder, const string &strBundleID, const string &strBundleVersion_Short, const string &strBundleVersion_Long, const string &strDisplayName, const string &strDyLibFile, bool bForce, bool bWeakInject, bool bEnableCache, bool bRemoveEmbedded, bool bRemoveWatch)
 {
 	m_bForceSign = bForce;
 	m_pSignAsset = pSignAsset;
