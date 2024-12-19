@@ -6,6 +6,7 @@
 #include "macho.h"
 #include "sys/types.h"
 #include "sys/stat.h"
+#include <vector>
 
 class ZAppBundle
 {
