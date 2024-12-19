@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# shellcheck shell=bash
 set -e
 
 function print_info { printf "\033[34m%s\033[0m\n" "$1"; }
